@@ -1,5 +1,5 @@
 <template>
-    <div class="profile-create">
+    <div class="profile-create-all">
         <form @submit.prevent='checkForm'>
             <h4>Create Event</h4>
             <my-input
@@ -43,7 +43,7 @@ import axios from 'axios'
 import MyInput from '@/components/UI/MyInput.vue';
 
 export default {
-    name: 'profile-create',
+    name: 'profile-create-all',
     components: {
         MyInput
     },

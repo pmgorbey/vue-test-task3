@@ -39,7 +39,9 @@
             <profile-create></profile-create>
         </my-dialog>
 
-        <profile-user-index></profile-user-index>
+        <profile-index
+            :userFilter="userName"
+        />
 
     </div>
 </template>
@@ -70,12 +72,8 @@ export default {
             phoneNumber: '',  
             Profiles: [],
             dialogVisible: false,
-            userName: '',
-            title: '',
-            description: '',
-            startDate: '',
-            endDate: '',
-            _id: this.$route.params._id
+            // userFilter: ''
+            
         }
     },
     methods: {
@@ -88,16 +86,6 @@ export default {
                 this.surName = response.data.surName;
                 this.email = response.data.email;
                 this.phoneNumber = response.data.phoneNumber;
-                // console.log(this.userName);
-
-            })
-        },
-        //From server
-        getProfiles(_id) {
-            axios.get(`http://localhost:3000/profiles/${this.$route.params._id}`)
-            .then(response => {
-                console.log(this.id);
-
             })
         },
         userClick() {
@@ -108,9 +96,8 @@ export default {
         }
     },
     mounted() {
-        this.getUsers(),
-        this.getProfiles()
-    }
+        this.getUsers()
+    }, 
 }
 </script>
 

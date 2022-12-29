@@ -9,10 +9,10 @@
         </my-button>
         
         <my-dialog v-model:show="dialogVisible">    
-            <profile-create></profile-create>
+            <profile-create-all></profile-create-all>
         </my-dialog>
 
-        <profile-index></profile-index>
+        <profile-index-all></profile-index-all>
 
     </div>
 </template>
@@ -20,16 +20,16 @@
 <script>
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
-import ProfileCreate from '@/components/ProfileCreate.vue'
-import ProfileIndex from '@/components/ProfileIndex.vue'
+import ProfileCreateAll from '@/components/ProfileCreate.vue'
+import ProfileIndexAll from '../components/ProfileIndexAll.vue'
 
 export default {
     name: 'user-profile',
     components: {
         MyDialog,
         MyButton,
-        ProfileCreate,
-        ProfileIndex
+        ProfileCreateAll,
+        ProfileIndexAll
     },
     data() {
         return {

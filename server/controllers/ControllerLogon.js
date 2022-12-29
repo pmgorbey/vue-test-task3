@@ -1,12 +1,8 @@
 const User = require('../models/ModelLogon');
-// const Role = require('../models/ModelRole');
-const {secret} = require('../config');
 const jwt = require('jsonwebtoken');
 const {validationResult} = require('express-validator');
-// const createPath = require('../helpers/create-path');
 const bcrypt = require('bcryptjs');
-
-
+const {secret} = require('../config');
 
 const generateAccessToken = (id) => {
     const payload = {
@@ -16,25 +12,7 @@ const generateAccessToken = (id) => {
     return jwt.sign(payload, secret, {expiresIn: '24h'});
 }
 
-
-
 class Controller {
-    // async getHome(req, res) {
-    //     const title = 'Home';
-    //     res.render(createPath('index'), {title});
-    // }
-
-
-    //getREGISTRATION
-    // async getRegistration(req, res) {
-    //     try {
-    //         const title = 'Registration'
-    //         res.render(createPath('logon-registration'), {title});
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
-
     //REGISTRATION
     async registration(req, res) {
         try {
@@ -52,8 +30,6 @@ class Controller {
             }
 
             const hashPassword = bcrypt.hashSync(password, 5);
-            // const userRole = await Role.findOne({value: "USER"});
-            // console.log(userRole);
             const user = new User({name: name, password: hashPassword});
             await user.save();
             // return res.json({message: "Користувач успішно зареєстрований ..."});
@@ -65,17 +41,6 @@ class Controller {
         }
     };
 
-
-
-    //getLogin
-    // async getLogin(req, res) {
-    //     try {
-    //         const title = 'Login'
-    //     res.render(createPath('logon-login'), {title});
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
 
     //Login
     async login(req, res) {
@@ -108,24 +73,6 @@ class Controller {
             
         }
     };
-
-    // async getLogout(req, res) {
-    //    try {
-    //     const title = 'Logput'
-    //     res.render(createPath('logon-logout'), {title});
-    //    } catch (err) {
-    //        console.log(err);
-    //    }    
-    // };
-
-    // async logout(req, res) {
-    //     try {
-
-    //     } catch (err) {
-    //         console.log(err);
-    //         res.status(400).json({message: 'Logout error'});
-    //     }
-    // };
 };
 
 module.exports = new Controller();

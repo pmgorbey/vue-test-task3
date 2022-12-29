@@ -9,23 +9,11 @@
                 MainPage
             </my-button>
             <my-button
-                @click="$router.push('/authlogon')"
-                style="margin-left: 10px"
-            >
-                AuthLogon
-            </my-button>
-            <my-button
                 @click="$router.push('/users')"
                 style="margin-left: 10px"
             >
                 UsersPage
             </my-button>
-            <!-- <my-button
-                @click="$router.push('/user')"
-                style="margin-left: 10px"
-            >
-                UserPage
-            </my-button> -->
             <my-button
                 @click="$router.push('/usersinfo')"
                 style="margin-left: 10px"

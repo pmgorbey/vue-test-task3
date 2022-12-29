@@ -10,16 +10,6 @@ class ControllerUserProfile {
         }
     }
 
-    async getName(req, res, next) {
-        try {
-            console.log(body.userName);
-            const profile = await ModelUserProfile.find({userName: userName})
-            return res.status(200).json(profile)
-        } catch(error) {
-            next(error)
-        }
-    }
-
     async getAll(req, res, next) {
         try {
             const profiles = await ModelUserProfile.find()

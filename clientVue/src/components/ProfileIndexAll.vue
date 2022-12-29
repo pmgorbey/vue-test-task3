@@ -1,6 +1,6 @@
 <template>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <div class="profile-index">
+    <div class="profile-index-all">
         <div class="table-user">
             <table class="table"> 
                 <tr class="my-table__header">
@@ -12,9 +12,9 @@
                     <th>Action</th>
                 </tr>
                 
-                <template v-for="profile in userFilter" :key="profile._id">
+                <template v-for="profile in profiles" :key="profile._id">
                     <tr class="table-user-row">
-                        <transition-group name="profile-index">
+                        <transition-group name="profile-index-all">
                                 <th class="row">{{profile.userName}}</th>
                                 <td class="row">{{profile.title}}</td>
                                 <td class="row">{{profile.description}}</td>
@@ -37,7 +37,7 @@
                         </transition-group>                       
                            
                         <tr :class="this.isEdit(profile._id) ? '' : classStr">
-                            <transition-group name="profile-index">
+                            <transition-group name="profile-index-all">
                                 <th class="row">{{profile._id}}</th>
                                 <td class="row"><input v-model="userName" type="text"></td>
                                 <td class="row"><input v-model="title" type="text"></td>
@@ -80,7 +80,7 @@ import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 
 export default {
-    name: 'profile-index',
+    name: 'profile-index-all',
     components: {
         ProfileCreate,
         MyDialog,
@@ -180,7 +180,7 @@ export default {
             let to = from + this.profilesCountPage;
             return this.profiles.slice(from, to);
         },
-        userFilter() {
+        userPrifile() {
             return this.profiles.filter((p) => {
                 return p.userName == this.userFilter;
             })
@@ -273,22 +273,22 @@ td {
     margin: 5px;
 }
 /* Animation add and delete */
-.profile-index-item {
+.profile-index-all-item {
   display: inline-block;
   margin-right: 10px;
 }
-.profile-index-enter-active,
-.profile-index-leave-active {
+.profile-index-all-enter-active,
+.profile-index-all-leave-active {
   transition: all 0.3s ease;
 }
-.profile-index-enter-from,
-.profile-index-leave-to {
+.profile-index-all-enter-from,
+.profile-index-all-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }
 
 /* Animation move */
-.profile-index-move {
+.profile-index-all-move {
   transition: transform 0.5s ease;
 }
 .classNone {

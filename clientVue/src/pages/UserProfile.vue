@@ -9,7 +9,7 @@
         </my-button>
         
         <my-dialog v-model:show="dialogVisible">    
-            <profile-create-all></profile-create-all>
+            <profile-create-all v-model="dialogVisible"></profile-create-all>
         </my-dialog>
 
         <profile-index-all></profile-index-all>

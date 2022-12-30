@@ -30,7 +30,7 @@
                 placeholder="EndDate"
             />
             <my-button 
-                @click="createProfile"
+                @click="multiple"
             >
                 Create
             </my-button>
@@ -47,6 +47,11 @@ export default {
     components: {
         MyInput
     },
+    props: {
+        modelValue: {
+            type: String
+        }
+    },
     data() {
         return {
             userName: '',
@@ -57,6 +62,10 @@ export default {
         }
     },
     methods: {
+        multiple() {
+            this.createProfile()
+            this.closeDialog()
+        },
         createProfile() {
             axios.post('http://localhost:3000/profiles', {
                 userName: this.userName,
@@ -103,6 +112,9 @@ export default {
                 alert('Enter a End date ...')
             }
             error.preventDefault();
+        },
+        closeDialog() {
+            this.$emit('update:modelValue', false)
         }
     }
 }

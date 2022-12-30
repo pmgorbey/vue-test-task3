@@ -7,6 +7,7 @@ import UserInfo from '@/pages/UserInfo.vue'
 import UserProfile from '@/pages/UserProfile.vue'
 import Login from '@/components/Login.vue'
 import Registration from '@/components/Registration.vue'
+import UsersStore from '@/pages/UsersPageStore.vue'
 
 const routes = [
     {
@@ -24,6 +25,10 @@ const routes = [
     {
         path: '/users',
         component: UsersPage 
+    },
+    {
+        path: '/store',
+        component: UsersStore 
     },
     {
         path: '/users/:_id',

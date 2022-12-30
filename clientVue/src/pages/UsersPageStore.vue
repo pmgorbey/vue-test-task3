@@ -1,5 +1,5 @@
 <template>
-    <div class="users-page">
+    <div class="users-page-store">
         <h1>Users Page</h1>
         <my-button
             @click="showDialog"
@@ -8,28 +8,28 @@
         </my-button>
 
         <my-dialog v-model:show="dialogVisible" >    
-            <user-create v-model="dialogVisible">
+            <user-create-store v-model="dialogVisible">
                 @click="createUser"
                 @click="closeDialog"
-            </user-create>
+            </user-create-store>
         </my-dialog>
         
-        <user-index></user-index>
+        <user-index-store></user-index-store>
     
     </div>
 </template>
 
 <script>
-import UserCreate from '@/components/UserCreate.vue'
-import UserIndex from '@/components/UserIndex.vue'
+import UserCreateStore from '@/components/UserCreateStore.vue'
+import UserIndexStore from '@/components/UserIndexStore.vue'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 
 export default {
-    name: 'users-page',
+    name: 'users-page-store',
     components: {
-        UserCreate,
-        UserIndex,
+        UserCreateStore,
+        UserIndexStore,
         MyDialog,
         MyButton
     },

@@ -15,6 +15,12 @@
                 UsersPage
             </my-button>
             <my-button
+                @click="$router.push('/store')"
+                style="margin-left: 10px"
+            >
+                UsersStore
+            </my-button>
+            <my-button
                 @click="$router.push('/usersinfo')"
                 style="margin-left: 10px"
             >

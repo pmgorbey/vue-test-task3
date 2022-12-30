@@ -15,22 +15,11 @@
 </template>
 
 <script>
+import selectMixin from '@/mixins/selectMixin.js'
+
 export default {
     name: 'my-select',
-    props: {
-        modelValue: {
-            type: String
-        },
-        options: {
-            type: Array,
-            default: () => []
-        }
-    },
-    methods: {
-        changeOption(event) {   
-            this.$emit('update:modelValue', event.target.value);
-        }
-    }
+    mixins: [ selectMixin ]
 }
 </script>
 

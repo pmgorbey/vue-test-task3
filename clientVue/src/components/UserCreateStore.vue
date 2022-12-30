@@ -1,5 +1,6 @@
 <template>
-    <form @submit.prevent>
+    <div class="user-create-store">
+        <form @submit.prevent>
         <h4>Create User</h4>
         <my-input
             v-focus
@@ -12,7 +13,6 @@
             type="text" 
             placeholder="SurName"
         />
-
         <my-input 
             v-model="email"
             type="email" 
@@ -28,20 +28,16 @@
         >
             Create
         </my-button>
-        <!-- <my-button 
-            @click="$emit('update:modelValue', false)"
-        >
-            Close
-        </my-button> -->
     </form>
+    </div>
 </template>
 
 <script>
-import axios from 'axios';
 import MyInput from '@/components/UI/MyInput.vue';
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
-    name: 'user-create',
+    name: 'user-create-store',
     components: { 
         MyInput 
     },
@@ -52,35 +48,34 @@ export default {
     },
     data() {
         return {
-            userName: '',
-            surName: '',
-            email: '',
-            phoneNumber: ''        
+      
         }
     },
     methods: {
-        multiple() {
+         multiple() {
             this.createUser();
             this.closeDialog();
         },
-        createUser() {
-            axios.post('http://localhost:3000/users', {
-                userName: this.userName,
-                surName: this.surName,
-                email: this.email,
-                phoneNumber: this.phoneNumber,
-            })
-            .then(response => {
-                this.userName = '',
-                this.surName = '',
-                this.email = '',
-                this.phoneNumber = ''
-                
-            })
-        },
         closeDialog() {
             this.$emit('update:modelValue', false)
-        }
+        },
+        ...mapMutations({
+            setUserName: 'users/setUserName',
+            setSurName: 'users/setSurName',
+            setEmail: 'users/setEmail',
+            setPhoneNumber: 'users/setPhoneNumber' 
+        }),
+        ...mapActions({
+            createUser: 'users/createUser'
+        })
+    }, 
+    computed: {
+        ...mapState({
+            userName: state => state.users.userName,
+            surName: state => state.users.surName,
+            email: state => state.users.email,
+            phoneNumber: state => state.users.phoneNumber
+        })
     }
 }
 </script>

@@ -73,10 +73,9 @@
 </template>
 
 <script>
-import axios from 'axios'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
-
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
     name: 'user-index-store',
@@ -86,91 +85,51 @@ export default {
     },
     data() {
         return {
-            usersCountPage: 20,
-            pageNumber: 1,
-            users: [],
-            editUserId: null,
-            classStr: 'classNone',
-            _id: '',
-            userName: '',
-            surName: '',
-            email: '',
-            phoneNumber: ''
+
         }
     },
     methods: {
-        userClick() {
-            this.$emit('userClick');
-        },
-
-        // Paginations
-        pageClick(page) {
-            this.pageNumber = page;
-        },
-        // Sort
-        SortByUserName() {
-            this.users.sort((a, b) => a.userName.localeCompare(b.userName));
-        },
-        SortBySurName() {
-            this.users.sort((a, b) => a.userName.localeCompare(b.userName));
-        },
-        SortByEmail() {
-            this.users.sort((a, b) => a.email.localeCompare(b.email));
-        },
-        SortByPhoneNumber() {
-            this.users.sort((a, b) => a.phoneNumber - b.phoneNumber);
-        },
-
-        //Request to Server
-        getUsers() {
-            axios.get(`http://localhost:3000/users`)
-            .then(response => {
-                this.users = response.data;
-            })
-        },
-        updateUser(_id) {
-            this.editUserId = null;
-
-            axios.put(`http://localhost:3000/users/${_id}`, {
-                userName: this.userName,
-                surName: this.surName,
-                email: this.email,
-                phoneNumber: this.phoneNumber,
-            })
-            .then(response => {
-                this.getUsers()
-            })
-        },
-        deleteUserId(_id) {
-            axios.delete(`http://localhost:3000/users/${_id}`)
-            .then(response => {
-                this.getUsers()
-            })
-        },
-        changeEditUserId(_id, userName, surName, email, phoneNumber) {
-            this.editUserId = _id;
-
-            this.userName = userName,
-            this.surName = surName,
-            this.email = email,
-            this.phoneNumber = phoneNumber    
-        },
-
-        isEdit(_id) {
-            return this.editUserId === _id
-        }
+        ...mapMutations({
+            setUserCountPage: 'index/setUserCountPage',
+            setPageNumber: 'index/setPageNumber',
+            setUsers: 'index/setUsers',
+            setEditUserId: 'index/setEditUserId',
+            setClassStr: 'index/setClassStr',
+            setId: 'index/setId',
+            setUserName: 'index/setUserName',
+            setSurName: 'index/setSurName',
+            setEmail: 'index/setEmail',
+            setPhoneNumber: 'index/setPhoneNumber' 
+        }),
+        ...mapActions({
+            SortByUserName: 'index/SortByUserName',
+            SortBySurName: 'index/SortBySurName',
+            SortByEmail: 'index/SortByEmail',
+            SortByPhoneNumber: 'index/SortByPhoneNumber',
+            getUsers: 'index/getUsers',
+            updateUser: 'index/updateUser',
+            deleteUserId: 'index/deleteUserId',
+            changeEditUserId: 'index/changeEditUserId',
+            isEdit: 'index/isEdit'
+        })
     },
     computed: {
-        // Paginations 
-        pages() {
-            return Math.ceil(this.users.length / 20);
-        },
-        // Count users on page
-        paginatedUsers() {
-            let from = (this.pageNumber-1) * this.usersCountPage;
-            let to = from + this.usersCountPage;
-            return this.users.slice(from, to);
-        }
+        ...mapState({
+            usersCountPage: state => state.index.usersCountPage,
+            pageNumber: state => state.index.pageNumber,
+            users: state => state.index.users,
+            editUserId: state => state.index.editUserId,
+            classStr: state => state.index.classStr,
+            _id: state => state.index._id,
+            userName: state => state.users.userName,
+            surName: state => state.users.surName,
+            email: state => state.users.email,
+            phoneNumber: state => state.users.phoneNumber
+    }),
+        ...mapGetters({
+            pages: 'index/pages',
+            paginatedUsers: 'index/paginatedUsers'
+        })
     },
     mounted() {
         this.getUsers()

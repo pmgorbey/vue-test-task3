@@ -36,7 +36,7 @@
         </my-button>
         
         <my-dialog v-model:show="dialogVisible">    
-            <profile-create></profile-create>
+            <profile-create v-model="dialogVisible"></profile-create>
         </my-dialog>
 
         <profile-index

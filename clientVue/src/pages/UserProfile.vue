@@ -20,8 +20,8 @@
 <script>
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
-import ProfileCreateAll from '@/components/ProfileCreate.vue'
-import ProfileIndexAll from '../components/ProfileIndexAll.vue'
+import ProfileCreateAll from '@/components/ProfileCreateAll.vue'
+import ProfileIndexAll from '@/components/ProfileIndexAll.vue'
 
 export default {
     name: 'user-profile',

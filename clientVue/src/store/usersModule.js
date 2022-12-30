@@ -14,7 +14,7 @@ export const usersModule = {
         setUserName(state, userName) {
             state.userName = userName;
         },
-        setAge(state, surName) {
+        setSurName(state, surName) {
             state.surName = surName;
         },
         setEmail(state, email) {
@@ -33,10 +33,10 @@ export const usersModule = {
                 phoneNumber: state.phoneNumber,
             })
             .then(response => {
-                commit(state.setUserName, ''),
-                commit(state.setUserName, ''),
-                commit(state.setEmail, ''),
-                commit(state.setPhoneNumber, '')
+                state.userName = '',
+                state.surName = ','
+                state.email = '',
+                state.phoneNumber = ''
                 
             })
         }

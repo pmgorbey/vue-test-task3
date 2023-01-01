@@ -38,6 +38,7 @@
 
 <script>
 import axios from 'axios';
+import {mapActions} from 'vuex'
 import MyInput from '@/components/UI/MyInput.vue';
 
 export default {
@@ -74,13 +75,19 @@ export default {
                 this.userName = '',
                 this.surName = '',
                 this.email = '',
-                this.phoneNumber = ''
-                
+                this.phoneNumber = '',
+                this.getUsers()  
             })
         },
         closeDialog() {
             this.$emit('update:modelValue', false)
-        }
+        },
+         ...mapActions({
+            getUsers: 'index/getUsers',
+        })
+    },
+    mounted() {
+        this.getUsers()
     }
 }
 </script>

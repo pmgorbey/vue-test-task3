@@ -60,21 +60,21 @@ export default {
             this.$emit('update:modelValue', false)
         },
         ...mapMutations({
-            setUserName: 'users/setUserName',
-            setSurName: 'users/setSurName',
-            setEmail: 'users/setEmail',
-            setPhoneNumber: 'users/setPhoneNumber' 
+            setUserName: 'index/setUserName',
+            setSurName: 'index/setSurName',
+            setEmail: 'index/setEmail',
+            setPhoneNumber: 'index/setPhoneNumber' 
         }),
         ...mapActions({
-            createUser: 'users/createUser'
+            createUser: 'index/createUser'
         })
     }, 
     computed: {
         ...mapState({
-            userName: state => state.users.userName,
-            surName: state => state.users.surName,
-            email: state => state.users.email,
-            phoneNumber: state => state.users.phoneNumber
+            userName: state => state.index.userName,
+            surName: state => state.index.surName,
+            email: state => state.index.email,
+            phoneNumber: state => state.index.phoneNumber
         })
     }
 }

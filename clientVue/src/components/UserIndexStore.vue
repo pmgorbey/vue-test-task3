@@ -73,6 +73,7 @@
 </template>
 
 <script>
+import axios from 'axios' 
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
@@ -89,6 +90,31 @@ export default {
         }
     },
     methods: {
+        // updateUser(_id) {
+        //     this.editUserId = null;
+
+        //     axios.put(`http://localhost:3000/users/${_id}`, {
+        //         userName: this.userName,
+        //         surName: this.surName,
+        //         email: this.email,
+        //         phoneNumber: this.phoneNumber,
+        //     })
+        //     .then(response => {
+        //         this.getUsers()
+        //     })
+        // },
+        changeEditUserId(_id, userName, surName, email, phoneNumber) {
+            this.editUserId = _id;
+
+            this.userName = userName,
+            this.surName = surName,
+            this.email = email,
+            this.phoneNumber = phoneNumber    
+        },
+
+        isEdit(_id) {
+            return this.editUserId === _id
+        },
         ...mapMutations({
             setUserCountPage: 'index/setUserCountPage',
             setPageNumber: 'index/setPageNumber',
@@ -106,11 +132,11 @@ export default {
             SortBySurName: 'index/SortBySurName',
             SortByEmail: 'index/SortByEmail',
             SortByPhoneNumber: 'index/SortByPhoneNumber',
-            getUsers: 'index/getUsers',
+            getUsers: 'index/getUsers', 
             updateUser: 'index/updateUser',
-            deleteUserId: 'index/deleteUserId',
-            changeEditUserId: 'index/changeEditUserId',
-            isEdit: 'index/isEdit'
+            deleteUserId: 'index/deleteUserId'
+            // changeEditUserId: 'index/changeEditUserId',
+            // isEdit: 'index/isEdit'
         })
     },
     computed: {
@@ -121,10 +147,10 @@ export default {
             editUserId: state => state.index.editUserId,
             classStr: state => state.index.classStr,
             _id: state => state.index._id,
-            userName: state => state.users.userName,
-            surName: state => state.users.surName,
-            email: state => state.users.email,
-            phoneNumber: state => state.users.phoneNumber
+            userName: state => state.index.userName,
+            surName: state => state.index.surName,
+            email: state => state.index.email,
+            phoneNumber: state => state.index.phoneNumber
     }),
         ...mapGetters({
             pages: 'index/pages',
@@ -132,7 +158,7 @@ export default {
         })
     },
     mounted() {
-        this.getUsers()
+        this.getUsers();
     }
 
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="users-page-store">
-        <h1>Users Page</h1>
+        <h1>Users Store</h1>
         <my-button
             @click="showDialog"
         >

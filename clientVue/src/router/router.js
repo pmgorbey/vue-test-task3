@@ -8,6 +8,7 @@ import UserProfile from '@/pages/UserProfile.vue'
 import Login from '@/components/Login.vue'
 import Registration from '@/components/Registration.vue'
 import UsersStore from '@/pages/UsersPageStore.vue'
+import UserInfoStore from '@/pages/UserInfoStore.vue'
 
 const routes = [
     {
@@ -37,6 +38,10 @@ const routes = [
     {
         path: '/usersinfo',
         component: UserInfo 
+    },
+    {
+        path: '/users-info-store',
+        component: UserInfoStore 
     },
     {
         path: '/userprofile',

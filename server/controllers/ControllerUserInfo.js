@@ -31,6 +31,7 @@ class ControllerUserInfo {
 
     async update(req, res, next) {
         try {
+            console.log(req.params.id);
             const user = await ModelUserInfo.findByIdAndUpdate(req.params.id, req.body, {new: true})
             return res.status(200).send(user);
         } catch(error) {

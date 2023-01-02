@@ -1,34 +1,36 @@
 <template>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <div class="user-index-store">
+    <div class="user-index-info-store">
         <div class="table-user">
             <table class="table"> 
                 <tr class="my-table__header">
                     <th @click="SortByUserName">UserName<i class="material-symbols-outlined">sort</i></th>
-                    <th @click="SortBySurName">SurName<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByEmail">Email<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByPhoneNumber">PhoneNumber<i class="material-symbols-outlined">sort</i></th>
+                    <th @click="SortByCountEvent">CountEvent<i class="material-symbols-outlined">sort</i></th>
+                    <th @click="SortByDateNextEvent">DateNextEvent<i class="material-symbols-outlined">sort</i></th>
                     <th>Action</th>
                 </tr>
                 
-                <template v-for="user in users" :key="user._id">
+                <template v-for="userInfo in usersInfo" :key="userInfo._id">
                     <tr class="table-user-row">
-                        <transition-group name="user-index-store">
-                                <!-- UserOne -->
-                                <th class="row" @click="$router.push(`/users/${user._id}`), userClick">{{user.userName}}</th>
-                                <td class="row">{{user.surName}}</td>
-                                <td class="row">{{user.email}}</td>
-                                <td class="row">{{user.phoneNumber}}</td>
+                        <transition-group name="user-index-info-store">
+                                <th class="row">{{userInfo.userName}}</th>
+                                <td class="row">{{userInfo.email}}</td>
+                                <td class="row">{{userInfo.phoneNumber}}</td>
+                                <td class="row">{{userInfo.countEvent = Math.round(Math.random() * 100)}}</td>
+                                <td class="row">{{userInfo.dateNextEvent = new Date()}}</td>
+                                
+                                
                                 <td class="row">
-                                    <!-- @click.prevent="changeEditUserId({_id: this._id, userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber})" -->
                                     <my-button
-                                        @click.prevent="changeEditUserId(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
+                                        @click.prevent="changeEditUserInfoId(userInfo._id, userInfo.userName, userInfo.email, userInfo.phoneNumber, userInfo.countEvent, userInfo.dateNextEvent)"
                                          style="margin-left: 10px"
                                     >
                                         Edit
                                     </my-button>
                                     <my-button
-                                        @click.prevent="deleteUserId(user._id)"
+                                        @click.prevent="deleteUserInfoId(userInfo._id)"
                                          style="margin-left: 10px"
                                     >
                                         Delete
@@ -36,16 +38,17 @@
                                 </td>     
                         </transition-group>                       
                            
-                        <tr :class="isEdit(user._id) ? '' : classStr">
-                            <transition-group name="user-index-store">
-                                <th class="row">{{user._id}}</th>
+                        <tr :class="this.isEdit(userInfo._id) ? '' : classStr">
+                            <transition-group name="user-index-info-store">
+                                <th class="row">{{userInfo._id}}</th>
                                 <td class="row"><input v-model="userName" type="text"></td>
-                                <td class="row"><input v-model="surName" type="text"></td>
                                 <td class="row"><input v-model="email" type="text"></td>
                                 <td class="row"><input v-model="phoneNumber" type="text"></td>
+                                <td class="row"><input v-model="countEvent" type="text"></td>
+                                <td class="row"><input v-model="dateNextEvent" type="text"></td>
                                 <td class="row">
                                     <my-button
-                                        @click.prevent="updateUser(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
+                                        @click.prevent="updateUserInfo(userInfo._id)"
                                      >
                                         Update
                                     </my-button>
@@ -73,98 +76,119 @@
 </template>
 
 <script>
-import axios from 'axios' 
+import axios from 'axios'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
-import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
-    name: 'user-index-store',
+    name: 'user-index-info-store',
     components: {
         MyDialog,
         MyButton
     },
     data() {
         return {
+            usersInfoCountPage: 20,
+            pageNumber: 1,
+            usersInfo: [],
+            editUserInfoId: null,
+            classStr: 'classNone',
             _id: '',
             userName: '',
-            surName: '',
             email: '',
             phoneNumber: '',
-            editUserId: null,
+            countEvent: '',
+            dateNextEvent: '',
+            usersProfile: [],
+            countEvent: [],
         }
     },
     methods: {
-        updateUser(_id) {
-            this.editUserId = null;
+        // Paginations
+        pageClick(page) {
+            this.pageNumber = page;
+        },
+        // Sort
+        SortByUserName() {
+            this.usersInfo.sort((a, b) => a.userName.localeCompare(b.userName));
+        },
+        SortByEmail() {
+            this.usersInfo.sort((a, b) => a.email.localeCompare(b.email));
+        },
+        SortByPhoneNumber() {
+            this.usersInfo.sort((a, b) => a.phoneNumber - b.phoneNumber);
+        },
+        SortByCountEvent() {
+            this.usersInfo.sort((a, b) => a.countEvent.localeCompare(b.countEvent));
+        },
+        SortByDateNextEvent() {
+            this.usersInfo.sort((a, b) => a.dateNextEvent.localeCompare(b.dateNextEvent));
+        },
+
+        //Request to Server
+        getUsersInfo() {
+            axios.get(`http://localhost:3000/users`)
+            .then(response => {
+                this.usersInfo = response.data;
+                // console.log(this.usersInfo)
+            })
+        },
+        getProfilesInfo() {
+            axios.get(`http://localhost:3000/profiles`)
+            .then(response => {
+                this.usersProfile = response.data;
+                console.log(this.usersProfile)
+            })
+        },
+        updateUserInfo(_id) {
+            this.editUserInfoId = null;
 
             axios.put(`http://localhost:3000/users/${_id}`, {
                 userName: this.userName,
-                surName: this.surName,
                 email: this.email,
                 phoneNumber: this.phoneNumber,
+                countEvent: this.countEvent,
+                dateNextEvent: this.dateNextEvent,
             })
             .then(response => {
-                this.getUsers()
+                this.getUsersInfo()
             })
         },
-        changeEditUserId(_id, userName, surName, email, phoneNumber) {
-            this.editUserId = _id;
+        deleteUserInfoId(_id) {
+            axios.delete(`http://localhost:3000/users/${_id}`)
+            .then(response => {
+                this.getUsersInfo()
+            })
+        },
+        changeEditUserInfoId(_id, userName, email, phoneNumber, countEvent, dateNextEvent) {
+            this.editUserInfoId = _id;
 
             this.userName = userName,
-            this.surName = surName,
             this.email = email,
-            this.phoneNumber = phoneNumber    
+            this.phoneNumber = phoneNumber,
+            this.countEvent = countEvent,
+            this.dateNextEvent = dateNextEvent
         },
 
         isEdit(_id) {
-            return this.editUserId === _id
-        },
-        ...mapMutations({
-            setUserCountPage: 'index/setUserCountPage',
-            setPageNumber: 'index/setPageNumber',
-            setUsers: 'index/setUsers',
-            setEditUserId: 'index/setEditUserId',
-            setClassStr: 'index/setClassStr',
-            setId: 'index/setId',
-            setUserName: 'index/setUserName',
-            setSurName: 'index/setSurName',
-            setEmail: 'index/setEmail',
-            setPhoneNumber: 'index/setPhoneNumber' 
-        }),
-        ...mapActions({
-            SortByUserName: 'index/SortByUserName',
-            SortBySurName: 'index/SortBySurName',
-            SortByEmail: 'index/SortByEmail',
-            SortByPhoneNumber: 'index/SortByPhoneNumber',
-            getUsers: 'index/getUsers', 
-            deleteUserId: 'index/deleteUserId',
-            // updateUser: 'index/updateUser',
-            // changeEditUserId: 'index/changeEditUserId',
-            // isEdit: 'index/isEdit'
-        })
+            return this.editUserInfoId === _id
+        }
     },
     computed: {
-        ...mapState({
-            usersCountPage: state => state.index.usersCountPage,
-            pageNumber: state => state.index.pageNumber,
-            users: state => state.index.users,
-            editUserId: state => state.index.editUserId,
-            classStr: state => state.index.classStr,
-            _id: state => state.index._id,
-            userName: state => state.index.userName,
-            surName: state => state.index.surName,
-            email: state => state.index.email,
-            phoneNumber: state => state.index.phoneNumber
-    }),
-        ...mapGetters({
-            pages: 'index/pages',
-            paginatedUsers: 'index/paginatedUsers'
-            // users: 'index/users'            
-        })
+        // Paginations 
+        pages() {
+            return Math.ceil(this.usersInfo.length / 20);
+        },
+        // Count users on page  
+        paginatedUsersInfo() {
+            let from = (this.pageNumber-1) * this.usersInfoCountPage;
+            let to = from + this.usersInfoCountPage;
+            return this.usersInfo.slice(from, to);
+        }
     },
     mounted() {
-        this.getUsers();
+        this.getUsersInfo()
+        this.getProfilesInfo()
     }
 
 }
@@ -251,22 +275,22 @@ td {
     margin: 5px;
 }
 /* Animation add and delete */
-.user-index-store-item {
+.user-index-info-store-item {
   display: inline-block;
   margin-right: 10px;
 }
-.user-index-store-enter-active,
-.user-index-store-leave-active {
+.user-index-info-store-enter-active,
+.user-index-info-store-leave-active {
   transition: all 0.3s ease;
 }
-.user-index-store-enter-from,
-.user-index-store-leave-to {
+.user-index-info-store-enter-from,
+.user-index-info-store-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }
 
 /* Animation move */
-.user-index-store-move {
+.user-index-info-store-move {
   transition: transform 0.5s ease;
 }
 .classNone {

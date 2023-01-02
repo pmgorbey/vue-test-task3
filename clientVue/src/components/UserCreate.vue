@@ -72,11 +72,11 @@ export default {
                 phoneNumber: this.phoneNumber,
             })
             .then(response => {
+                this.getUsers, 
                 this.userName = '',
                 this.surName = '',
                 this.email = '',
-                this.phoneNumber = '',
-                this.getUsers()  
+                this.phoneNumber = '' 
             })
         },
         closeDialog() {

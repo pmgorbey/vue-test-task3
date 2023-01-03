@@ -9,10 +9,6 @@
                     <th @click="SortByPhoneNumber">PhoneNumber<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByCountEvent">CountEvent<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByDateNextEvent">DateNextEvent<i class="material-symbols-outlined">sort</i></th>
-<<<<<<< HEAD
-=======
-                    <th>Action</th>
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
                 </tr>
                 
                 <template v-for="userInfo in usersInfo" :key="userInfo._id">
@@ -21,34 +17,11 @@
                                 <th class="row">{{userInfo.userName}}</th>
                                 <td class="row">{{userInfo.email}}</td>
                                 <td class="row">{{userInfo.phoneNumber}}</td>
-<<<<<<< HEAD
                                 <td class="row">{{userInfo.countEvent}}</td>
                                 <td class="row">{{userInfo.dateNextEvent}}</td>     
                         </transition-group>                       
                            
                         <!-- <tr :class="this.isEdit(userInfo._id) ? '' : classStr"> -->
-=======
-                                <td class="row">{{userInfo.countEvent = Math.round(Math.random() * 100)}}</td>
-                                <td class="row">{{userInfo.dateNextEvent = new Date()}}</td>
-                                
-                                
-                                <td class="row">
-                                    <my-button
-                                        @click.prevent="changeEditUserInfoId(userInfo._id, userInfo.userName, userInfo.email, userInfo.phoneNumber, userInfo.countEvent, userInfo.dateNextEvent)"
-                                         style="margin-left: 10px"
-                                    >
-                                        Edit
-                                    </my-button>
-                                    <my-button
-                                        @click.prevent="deleteUserInfoId(userInfo._id)"
-                                         style="margin-left: 10px"
-                                    >
-                                        Delete
-                                    </my-button>
-                                </td>     
-                        </transition-group>                       
-                           
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
                         <tr :class="this.isEdit(userInfo._id) ? '' : classStr">
                             <transition-group name="user-index-info-store">
                                 <th class="row">{{userInfo._id}}</th>
@@ -57,27 +30,13 @@
                                 <td class="row"><input v-model="phoneNumber" type="text"></td>
                                 <td class="row"><input v-model="countEvent" type="text"></td>
                                 <td class="row"><input v-model="dateNextEvent" type="text"></td>
-<<<<<<< HEAD
-=======
-                                <td class="row">
-                                    <my-button
-                                        @click.prevent="updateUserInfo(userInfo._id)"
-                                     >
-                                        Update
-                                    </my-button>
-                                </td>
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
                             </transition-group>
                         </tr>
                         
                     </tr>
                 </template>
             </table>
-<<<<<<< HEAD
             
-=======
-
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
             <!-- Paginations -->
             <div class="my-table-pagination">
                 <div class="page"
@@ -86,17 +45,10 @@
                     :class="{'page__selected' : page === pageNumber}"
                     @click="pageClick(page)"
                 >
-<<<<<<< HEAD
                     {{ page }}
                 </div>
             </div>
         </div> 
-=======
-                    {{ page }}                    
-                </div>
-            </div>
-        </div>  
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
     </div>
 </template>
 
@@ -115,10 +67,6 @@ export default {
         return {
             usersInfoCountPage: 20,
             pageNumber: 1,
-<<<<<<< HEAD
-=======
-            usersInfo: [],
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
             editUserInfoId: null,
             classStr: 'classNone',
             _id: '',
@@ -127,13 +75,8 @@ export default {
             phoneNumber: '',
             countEvent: '',
             dateNextEvent: '',
-<<<<<<< HEAD
             usersInfo: [],
             profiles: []
-=======
-            usersProfile: [],
-            countEvent: [],
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
         }
     },
     methods: {
@@ -152,11 +95,7 @@ export default {
             this.usersInfo.sort((a, b) => a.phoneNumber - b.phoneNumber);
         },
         SortByCountEvent() {
-<<<<<<< HEAD
             this.usersInfo.sort((a, b) => a.countEvent - b.countEvent);
-=======
-            this.usersInfo.sort((a, b) => a.countEvent.localeCompare(b.countEvent));
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
         },
         SortByDateNextEvent() {
             this.usersInfo.sort((a, b) => a.dateNextEvent.localeCompare(b.dateNextEvent));
@@ -167,55 +106,14 @@ export default {
             axios.get(`http://localhost:3000/users`)
             .then(response => {
                 this.usersInfo = response.data;
-<<<<<<< HEAD
-=======
-                // console.log(this.usersInfo)
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
             })
         },
         getProfilesInfo() {
             axios.get(`http://localhost:3000/profiles`)
             .then(response => {
-<<<<<<< HEAD
                 this.profiles = response.data;
             })
         },
-=======
-                this.usersProfile = response.data;
-                console.log(this.usersProfile)
-            })
-        },
-        updateUserInfo(_id) {
-            this.editUserInfoId = null;
-
-            axios.put(`http://localhost:3000/users/${_id}`, {
-                userName: this.userName,
-                email: this.email,
-                phoneNumber: this.phoneNumber,
-                countEvent: this.countEvent,
-                dateNextEvent: this.dateNextEvent,
-            })
-            .then(response => {
-                this.getUsersInfo()
-            })
-        },
-        deleteUserInfoId(_id) {
-            axios.delete(`http://localhost:3000/users/${_id}`)
-            .then(response => {
-                this.getUsersInfo()
-            })
-        },
-        changeEditUserInfoId(_id, userName, email, phoneNumber, countEvent, dateNextEvent) {
-            this.editUserInfoId = _id;
-
-            this.userName = userName,
-            this.email = email,
-            this.phoneNumber = phoneNumber,
-            this.countEvent = countEvent,
-            this.dateNextEvent = dateNextEvent
-        },
-
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
         isEdit(_id) {
             return this.editUserInfoId === _id
         }
@@ -227,10 +125,9 @@ export default {
         },
         // Count users on page  
         paginatedUsersInfo() {
-            let from = (this.pageNumber-1) * this.usersInfoCountPage;    
+            let from = (this.pageNumber-1) * this.usersInfoCountPage;
             let to = from + this.usersInfoCountPage;
             return this.usersInfo.slice(from, to);
-<<<<<<< HEAD
         },
         countEvent() {            
             for (let i in this.usersInfo) {
@@ -258,18 +155,12 @@ export default {
                 }
             }
             return this.usersInfo.dateNextEvent
-=======
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
         }
     },
     mounted() {
         this.getUsersInfo()
         this.getProfilesInfo()
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> 314d659c64073d8885141416fd3ec9325096ad7b
 }
 </script>
 

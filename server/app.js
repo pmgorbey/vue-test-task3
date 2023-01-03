@@ -27,33 +27,6 @@ app.use((req, res, next) => {
     next();
 });
 
-//Minin
-let contacts = [
-    {id: v4(), name: 'Ivan', value: '3', marked: false},
-    // {id: v4(), name: 'Dima', value: '11', marked: false},
-    // {id: v4(), name: 'Petro', value: '36', marked: false},
-]
-
-// app.get('/api/contacts', (req, res) => {
-//     res.status(200).json(contacts)
-// })
-
-// app.post('/api/contacts', (req, res) => {
-//     const contact = {...req.body, id: v4(), markep: false}
-//     contacts.push(contact);
-//     res.status(201).json(contact);
-// }) 
-
-// app.delete('/api/contacts/:id', (req, res) => {
-//     try {
-//         console.log(req.params.id);
-//         contacts = contacts.filter(c => c.id !== req.paramas.id)
-//         res.status(200).json({message: `Item id=${c.id} is deleted ...`});
-//     } catch(error) {
-//         console.log(error);
-//     }
-// }) 
-
 app.get('/', (req, res) => {
     res.json({message: 'Server is already ... '})
 })

@@ -48,12 +48,15 @@ export default {
     },
     data() {
         return {
-      
+            userName: '',
+            surName: '',
+            email: '',
+            phoneNumber: ''
         }
     },
     methods: {
          multiple() {
-            this.createUser();
+            this.createUser({userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber});
             this.closeDialog();
         },
         closeDialog() {

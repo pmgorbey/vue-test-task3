@@ -79,70 +79,23 @@ export const usersIndexModule = {
                 commit('setUsers', response.data);
             })
         },
-        // async createUser({state, dispatch, commit}, payload) {
-        //     await axios.post('http://localhost:3000/users', payload
-        //     // {    
-        //     //     userName: state.userName,
-        //     //     surName: state.surName,
-        //     //     email: state.email,
-        //     //     phoneNumber: state.phoneNumber,
-        //     // }
-        //     )
-        //     .then(response => {
-        //         dispatch('getUsers')
-        //         // state.userName = '',
-        //         // state.surName = ','
-        //         // state.email = '',
-        //         // state.phoneNumber = ''
-        //     })
-        // },
-        async createUser({state, dispatch}) {
-            await axios.post('http://localhost:3000/users', {    
-                userName: state.userName,
-                surName: state.surName,
-                email: state.email,
-                phoneNumber: state.phoneNumber,
-            }
-            )
-            .then(response => {
-                dispatch('getUsers')
-                state.userName = '',
-                state.surName = ','
-                state.email = '',
-                state.phoneNumber = ''
-            })
-        },
-        deleteUserId({ dispatch}, _id) {
-            axios.delete(`http://localhost:3000/users/${_id}`)
-            .then(response => {
-                dispatch('getUsers')
-            })
-        },
-        updateUser({state, commit, dispatch}, _id) {
-            commit(setEditUserId, null)
-            
-            axios.put(`http://localhost:3000/users/${_id}`, {
-                userName: state.userName,
-                surName: state.surName,
-                email: state.email,
-                phoneNumber: state.phoneNumber,
+        async createUser({dispatch}, data) {
+            await axios.post('http://localhost:3000/users', {
+                userName: data.userName,
+                surName: data.surName,
+                email: data.email,
+                phoneNumber: data.phoneNumber,
             })
             .then(response => {
                 dispatch('getUsers')
             })
         },
-        // changeEditUserId({state}, _id, userName, surName, email, phoneNumber) {
-        //     state.editUserId = _id;
-
-        //     state.userName = userName,
-        //     state.surName = surName,
-        //     state.email = email,
-        //     state.phoneNumber = phoneNumber    
-        // },
-
-        // isEdit({state}, _id) {
-        //     return state.editUserId === _id
-        // },
+        async deleteUserId({ dispatch}, _id) {
+            await axios.delete(`http://localhost:3000/users/${_id}`)
+            .then(response => {
+                dispatch('getUsers')
+            })
+        }
     },
     namespaced: true
 }

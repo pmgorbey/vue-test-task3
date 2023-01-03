@@ -1,25 +1,24 @@
 <template>
-    <div class="user-info">
-        <h1>Users Info</h1>
-        <user-info-index></user-info-index>
+    <div class="user-info-store">
+        <h1>Users Info Store</h1>
+        <user-info-index-store></user-info-index-store>
     </div>
 </template>
 
 <script>
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
-import UserInfoIndex from '@/components/UserInfoIndex.vue' 
+import UserInfoIndexStore from '@/components/UserInfoIndexStore.vue' 
 
 export default {
-    name: 'user-info',
+    name: 'user-info-store',
     components: {
         MyDialog,
         MyButton,
-        UserInfoIndex
+        UserInfoIndexStore
     },
     data() {
         return {
-            users: [],
             dialogVisible: false,
         }
     },

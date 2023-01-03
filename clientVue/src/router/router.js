@@ -3,11 +3,11 @@ import {createRouter, createWebHistory} from 'vue-router';
 import Main from '@/pages/Main.vue'
 import UsersPage from '@/pages/UsersPage.vue'
 import UserPage from '@/pages/UserPage.vue'
-import UserInfo from '@/pages/UserInfo.vue'
 import UserProfile from '@/pages/UserProfile.vue'
 import Login from '@/components/Login.vue'
 import Registration from '@/components/Registration.vue'
 import UsersStore from '@/pages/UsersPageStore.vue'
+import UserInfoStore from '@/pages/UserInfoStore.vue'
 
 const routes = [
     {
@@ -35,8 +35,8 @@ const routes = [
         component: UserPage 
     },
     {
-        path: '/usersinfo',
-        component: UserInfo 
+        path: '/users-info-store',
+        component: UserInfoStore 
     },
     {
         path: '/userprofile',

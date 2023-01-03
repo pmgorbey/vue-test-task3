@@ -14,13 +14,13 @@
                 <template v-for="user in users" :key="user._id">
                     <tr class="table-user-row">
                         <transition-group name="user-index-store">
-                                <!-- <th class="row" @click="$router.push(`user`)">{{user.userName}}</th> -->
                                 <!-- UserOne -->
                                 <th class="row" @click="$router.push(`/users/${user._id}`), userClick">{{user.userName}}</th>
                                 <td class="row">{{user.surName}}</td>
                                 <td class="row">{{user.email}}</td>
                                 <td class="row">{{user.phoneNumber}}</td>
                                 <td class="row">
+                                    <!-- @click.prevent="changeEditUserId({_id: this._id, userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber})" -->
                                     <my-button
                                         @click.prevent="changeEditUserId(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
                                          style="margin-left: 10px"
@@ -36,7 +36,7 @@
                                 </td>     
                         </transition-group>                       
                            
-                        <tr :class="this.isEdit(user._id) ? '' : classStr">
+                        <tr :class="isEdit(user._id) ? '' : classStr">
                             <transition-group name="user-index-store">
                                 <th class="row">{{user._id}}</th>
                                 <td class="row"><input v-model="userName" type="text"></td>
@@ -45,7 +45,7 @@
                                 <td class="row"><input v-model="phoneNumber" type="text"></td>
                                 <td class="row">
                                     <my-button
-                                        @click.prevent="updateUser(user._id)"
+                                        @click.prevent="updateUser(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
                                      >
                                         Update
                                     </my-button>
@@ -86,23 +86,28 @@ export default {
     },
     data() {
         return {
-
+            _id: '',
+            userName: '',
+            surName: '',
+            email: '',
+            phoneNumber: '',
+            editUserId: null,
         }
     },
     methods: {
-        // updateUser(_id) {
-        //     this.editUserId = null;
+        updateUser(_id) {
+            this.editUserId = null;
 
-        //     axios.put(`http://localhost:3000/users/${_id}`, {
-        //         userName: this.userName,
-        //         surName: this.surName,
-        //         email: this.email,
-        //         phoneNumber: this.phoneNumber,
-        //     })
-        //     .then(response => {
-        //         this.getUsers()
-        //     })
-        // },
+            axios.put(`http://localhost:3000/users/${_id}`, {
+                userName: this.userName,
+                surName: this.surName,
+                email: this.email,
+                phoneNumber: this.phoneNumber,
+            })
+            .then(response => {
+                this.getUsers()
+            })
+        },
         changeEditUserId(_id, userName, surName, email, phoneNumber) {
             this.editUserId = _id;
 
@@ -133,8 +138,8 @@ export default {
             SortByEmail: 'index/SortByEmail',
             SortByPhoneNumber: 'index/SortByPhoneNumber',
             getUsers: 'index/getUsers', 
-            updateUser: 'index/updateUser',
-            deleteUserId: 'index/deleteUserId'
+            deleteUserId: 'index/deleteUserId',
+            // updateUser: 'index/updateUser',
             // changeEditUserId: 'index/changeEditUserId',
             // isEdit: 'index/isEdit'
         })
@@ -155,6 +160,7 @@ export default {
         ...mapGetters({
             pages: 'index/pages',
             paginatedUsers: 'index/paginatedUsers'
+            // users: 'index/users'            
         })
     },
     mounted() {

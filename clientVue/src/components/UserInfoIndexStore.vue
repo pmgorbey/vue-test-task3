@@ -1,6 +1,6 @@
 <template>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
-    <div class="user-index-info">
+    <div class="user-index-info-store">
         <div class="table-user">
             <table class="table"> 
                 <tr class="my-table__header">
@@ -9,55 +9,34 @@
                     <th @click="SortByPhoneNumber">PhoneNumber<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByCountEvent">CountEvent<i class="material-symbols-outlined">sort</i></th>
                     <th @click="SortByDateNextEvent">DateNextEvent<i class="material-symbols-outlined">sort</i></th>
-                    <th>Action</th>
                 </tr>
                 
                 <template v-for="userInfo in usersInfo" :key="userInfo._id">
                     <tr class="table-user-row">
-                        <transition-group name="user-index-info">
+                        <transition-group name="user-index-info-store">
                                 <th class="row">{{userInfo.userName}}</th>
                                 <td class="row">{{userInfo.email}}</td>
                                 <td class="row">{{userInfo.phoneNumber}}</td>
                                 <td class="row">{{userInfo.countEvent}}</td>
-                                <td class="row">{{userInfo.dateNextEvent}}</td>
-                                <td class="row">
-                                    <my-button
-                                        @click.prevent="changeEditUserInfoId(userInfo._id, userInfo.userName, userInfo.email, userInfo.phoneNumber, userInfo.countEvent, userInfo.dateNextEvent)"
-                                         style="margin-left: 10px"
-                                    >
-                                        Edit
-                                    </my-button>
-                                    <my-button
-                                        @click.prevent="deleteUserInfoId(userInfo._id)"
-                                         style="margin-left: 10px"
-                                    >
-                                        Delete
-                                    </my-button>
-                                </td>     
+                                <td class="row">{{userInfo.dateNextEvent}}</td>     
                         </transition-group>                       
                            
+                        <!-- <tr :class="this.isEdit(userInfo._id) ? '' : classStr"> -->
                         <tr :class="this.isEdit(userInfo._id) ? '' : classStr">
-                            <transition-group name="user-index-info">
+                            <transition-group name="user-index-info-store">
                                 <th class="row">{{userInfo._id}}</th>
                                 <td class="row"><input v-model="userName" type="text"></td>
                                 <td class="row"><input v-model="email" type="text"></td>
                                 <td class="row"><input v-model="phoneNumber" type="text"></td>
                                 <td class="row"><input v-model="countEvent" type="text"></td>
                                 <td class="row"><input v-model="dateNextEvent" type="text"></td>
-                                <td class="row">
-                                    <my-button
-                                        @click.prevent="updateUserInfo(userInfo._id)"
-                                     >
-                                        Update
-                                    </my-button>
-                                </td>
                             </transition-group>
                         </tr>
                         
                     </tr>
                 </template>
             </table>
-
+            
             <!-- Paginations -->
             <div class="my-table-pagination">
                 <div class="page"
@@ -66,10 +45,10 @@
                     :class="{'page__selected' : page === pageNumber}"
                     @click="pageClick(page)"
                 >
-                    {{ page }}                    
+                    {{ page }}
                 </div>
             </div>
-        </div>  
+        </div> 
     </div>
 </template>
 
@@ -79,7 +58,7 @@ import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 
 export default {
-    name: 'user-index-info',
+    name: 'user-index-info-store',
     components: {
         MyDialog,
         MyButton
@@ -88,7 +67,6 @@ export default {
         return {
             usersInfoCountPage: 20,
             pageNumber: 1,
-            usersInfo: [],
             editUserInfoId: null,
             classStr: 'classNone',
             _id: '',
@@ -96,7 +74,9 @@ export default {
             email: '',
             phoneNumber: '',
             countEvent: '',
-            dateNextEvent: ''
+            dateNextEvent: '',
+            usersInfo: [],
+            profiles: []
         }
     },
     methods: {
@@ -115,7 +95,7 @@ export default {
             this.usersInfo.sort((a, b) => a.phoneNumber - b.phoneNumber);
         },
         SortByCountEvent() {
-            this.usersInfo.sort((a, b) => a.countEvent.localeCompare(b.countEvent));
+            this.usersInfo.sort((a, b) => a.countEvent - b.countEvent);
         },
         SortByDateNextEvent() {
             this.usersInfo.sort((a, b) => a.dateNextEvent.localeCompare(b.dateNextEvent));
@@ -128,42 +108,12 @@ export default {
                 this.usersInfo = response.data;
             })
         },
-        // getProfilesInfo() {
-        //     axios.get(`http://localhost:3000/profiles`)
-        //     .then(response => {
-        //         this.usersInfo = response.data;
-        //     })
-        // },
-        updateUserInfo(_id) {
-            this.editUserInfoId = null;
-
-            axios.put(`http://localhost:3000/users/${_id}`, {
-                userName: this.userName,
-                email: this.email,
-                phoneNumber: this.phoneNumber,
-                countEvent: this.countEvent,
-                dateNextEvent: this.dateNextEvent,
-            })
+        getProfilesInfo() {
+            axios.get(`http://localhost:3000/profiles`)
             .then(response => {
-                this.getUsersInfo()
+                this.profiles = response.data;
             })
         },
-        deleteUserInfoId(_id) {
-            axios.delete(`http://localhost:3000/users/${_id}`)
-            .then(response => {
-                this.getUsersInfo()
-            })
-        },
-        changeEditUserInfoId(_id, userName, email, phoneNumber, countEvent, dateNextEvent) {
-            this.editUserInfoId = _id;
-
-            this.userName = userName,
-            this.email = email,
-            this.phoneNumber = phoneNumber,
-            this.countEvent = countEvent,
-            this.dateNextEvent = dateNextEvent
-        },
-
         isEdit(_id) {
             return this.editUserInfoId === _id
         }
@@ -178,13 +128,39 @@ export default {
             let from = (this.pageNumber-1) * this.usersInfoCountPage;
             let to = from + this.usersInfoCountPage;
             return this.usersInfo.slice(from, to);
+        },
+        countEvent() {            
+            for (let i in this.usersInfo) {
+                this.usersInfo[i].countEvent = 0;
+                for (let j in this.profiles) {
+                    if (this.usersInfo[i].userName === this.profiles[j].userName) {
+                        this.usersInfo[i].countEvent++;
+                    } 
+                }
+            }
+            return this.usersInfo.countEvent
+        },
+        dateNextEvent() {
+            const array = [];
+            for (let i in this.usersInfo) {
+                this.usersInfo[i].dateNextEvent = 'Not event';
+                for (let j in this.profiles) {
+                    if (this.usersInfo[i].userName === this.profiles[j].userName) {                      
+                        let item = this.profiles[j].startDate;
+                        array.push(Date.parse(item));
+                        let date = new Date(item);
+                        // this.usersInfo[i].dateNextEvent = Math.max.apply(null, array);
+                        this.usersInfo[i].dateNextEvent = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                    } 
+                }
+            }
+            return this.usersInfo.dateNextEvent
         }
     },
     mounted() {
         this.getUsersInfo()
-        // this.getProfilesInfo()
+        this.getProfilesInfo()
     }
-
 }
 </script>
 
@@ -269,22 +245,22 @@ td {
     margin: 5px;
 }
 /* Animation add and delete */
-.user-index-info-item {
+.user-index-info-store-item {
   display: inline-block;
   margin-right: 10px;
 }
-.user-index-info-enter-active,
-.user-index-info-leave-active {
+.user-index-info-store-enter-active,
+.user-index-info-store-leave-active {
   transition: all 0.3s ease;
 }
-.user-index-info-enter-from,
-.user-index-info-leave-to {
+.user-index-info-store-enter-from,
+.user-index-info-store-leave-to {
   opacity: 0;
   transform: translateX(30px);
 }
 
 /* Animation move */
-.user-index-info-move {
+.user-index-info-store-move {
   transition: transform 0.5s ease;
 }
 .classNone {

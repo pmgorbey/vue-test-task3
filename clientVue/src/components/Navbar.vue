@@ -21,10 +21,10 @@
                 UsersStore
             </my-button>
             <my-button
-                @click="$router.push('/usersinfo')"
+                @click="$router.push('/users-info-store')"
                 style="margin-left: 10px"
             >
-                UserInfo
+                UserInfoStore
             </my-button>
             <my-button 
                 @click="$router.push('/userprofile')"

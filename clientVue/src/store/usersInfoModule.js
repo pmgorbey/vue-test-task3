@@ -53,8 +53,7 @@ export const usersInfoModule = {
                             state.usersInfo[i].dateNextEvent = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
                         }
                         // array.push(Date.parse(item));
-                        // state.usersInfo[i].dateNextEvent = Math.max.apply(null, array);
-                        
+                        // state.usersInfo[i].dateNextEvent = Math.max.apply(null, array);  
                     } 
                 }
             }

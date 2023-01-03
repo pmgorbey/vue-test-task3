@@ -227,7 +227,7 @@ export default {
         },
         // Count users on page  
         paginatedUsersInfo() {
-            let from = (this.pageNumber-1) * this.usersInfoCountPage;
+            let from = (this.pageNumber-1) * this.usersInfoCountPage;    
             let to = from + this.usersInfoCountPage;
             return this.usersInfo.slice(from, to);
 <<<<<<< HEAD

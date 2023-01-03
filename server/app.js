@@ -45,7 +45,7 @@ const start = async (req, res) => {
             useUnifiedTopology: true
         });
         app.listen(PORT, () => {
-            console.log(`Worker started on PORT ${PORT} PID ${pid}`);
+            console.log(`Worker started on PORT ${PORT} PID ${pid}`);  
         });
     } catch (err) {
         console.log(err);

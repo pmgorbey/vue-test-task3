@@ -39,6 +39,10 @@ const routes = [
         component: UserInfoStore 
     },
     {
+        path: '/users-info-store',
+        component: UserInfoStore 
+    },
+    {
         path: '/userprofile',
         component: UserProfile 
     },

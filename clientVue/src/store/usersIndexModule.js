@@ -16,7 +16,7 @@ export const usersIndexModule = {
     getters: {
         // Paginations 
         pages(state) {
-            return Math.ceil(state.users.length / 20);
+            return Math.ceil(state.users.length / 10);
         },
         // Count users on page
         paginatedUsers(state) {

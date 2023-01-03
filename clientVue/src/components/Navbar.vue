@@ -26,12 +26,6 @@
             >
                 UserInfoStore
             </my-button>
-            <my-button
-                @click="$router.push('/users-info-store')"
-                style="margin-left: 10px"
-            >
-                UserInfoStore
-            </my-button>
             <my-button 
                 @click="$router.push('/userprofile')"
                 style="margin-left: 10px"

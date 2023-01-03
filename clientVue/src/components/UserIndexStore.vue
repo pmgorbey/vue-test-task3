@@ -116,7 +116,6 @@ export default {
             this.email = email,
             this.phoneNumber = phoneNumber    
         },
-
         isEdit(_id) {
             return this.editUserId === _id
         },
@@ -138,10 +137,7 @@ export default {
             SortByEmail: 'index/SortByEmail',
             SortByPhoneNumber: 'index/SortByPhoneNumber',
             getUsers: 'index/getUsers', 
-            deleteUserId: 'index/deleteUserId',
-            // updateUser: 'index/updateUser',
-            // changeEditUserId: 'index/changeEditUserId',
-            // isEdit: 'index/isEdit'
+            deleteUserId: 'index/deleteUserId'
         })
     },
     computed: {
@@ -156,17 +152,15 @@ export default {
             surName: state => state.index.surName,
             email: state => state.index.email,
             phoneNumber: state => state.index.phoneNumber
-    }),
+        }),
         ...mapGetters({
             pages: 'index/pages',
-            paginatedUsers: 'index/paginatedUsers'
-            // users: 'index/users'            
+            paginatedUsers: 'index/paginatedUsers'            
         })
     },
     mounted() {
         this.getUsers();
     }
-
 }
 </script>
 

@@ -4,7 +4,6 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const {v4} = require('uuid');
 
 const RouterLogon = require('./routers/RouterLogon');
 const RouterUserInfo = require('./routers/RouterUserInfo');

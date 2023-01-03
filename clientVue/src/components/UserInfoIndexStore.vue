@@ -21,7 +21,6 @@
                                 <td class="row">{{userInfo.dateNextEvent}}</td>     
                         </transition-group>                       
                            
-                        <!-- <tr :class="this.isEdit(userInfo._id) ? '' : classStr"> -->
                         <tr :class="this.isEdit(userInfo._id) ? '' : classStr">
                             <transition-group name="user-index-info-store">
                                 <th class="row">{{userInfo._id}}</th>
@@ -56,6 +55,7 @@
 import axios from 'axios'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
     name: 'user-index-info-store',
@@ -65,18 +65,7 @@ export default {
     },
     data() {
         return {
-            usersInfoCountPage: 20,
-            pageNumber: 1,
-            editUserInfoId: null,
-            classStr: 'classNone',
-            _id: '',
-            userName: '',
-            email: '',
-            phoneNumber: '',
-            countEvent: '',
-            dateNextEvent: '',
-            usersInfo: [],
-            profiles: []
+
         }
     },
     methods: {
@@ -84,78 +73,56 @@ export default {
         pageClick(page) {
             this.pageNumber = page;
         },
-        // Sort
-        SortByUserName() {
-            this.usersInfo.sort((a, b) => a.userName.localeCompare(b.userName));
-        },
-        SortByEmail() {
-            this.usersInfo.sort((a, b) => a.email.localeCompare(b.email));
-        },
-        SortByPhoneNumber() {
-            this.usersInfo.sort((a, b) => a.phoneNumber - b.phoneNumber);
-        },
-        SortByCountEvent() {
-            this.usersInfo.sort((a, b) => a.countEvent - b.countEvent);
-        },
-        SortByDateNextEvent() {
-            this.usersInfo.sort((a, b) => a.dateNextEvent.localeCompare(b.dateNextEvent));
-        },
-
-        //Request to Server
-        getUsersInfo() {
-            axios.get(`http://localhost:3000/users`)
-            .then(response => {
-                this.usersInfo = response.data;
-            })
-        },
-        getProfilesInfo() {
-            axios.get(`http://localhost:3000/profiles`)
-            .then(response => {
-                this.profiles = response.data;
-            })
-        },
         isEdit(_id) {
             return this.editUserInfoId === _id
-        }
+        },
+        ...mapMutations({
+            usersInfoCountPage: 'info/usersInfoCountPage',
+            pageNumber: 'info/pageNumber',
+            editUserInfoId: 'info/editUserInfoId',
+            classStr: 'info/classStr',
+            userName: 'info/userName',
+            email: 'info/email',
+            phoneNumber: 'info/phoneNumber',
+            countEvent: 'info/countEvent',
+            dateNextEvent: 'info/dateNextEvent',
+            usersInfo: 'info/usersInfo',
+            profiles: 'info/profiles',
+        }),
+        ...mapActions({
+            // Sort
+            SortByUserName: 'info/SortByUserName',
+            SortByEmail: 'info/SortByEmail',
+            SortByPhoneNumber: 'info/SortByPhoneNumber',
+            SortByCountEvent: 'info/SortByCountEvent',
+            SortByDateNextEvent: 'info/SortByDateNextEvent',
+    
+            //Request to Server
+            getUsersInfo: 'info/getUsersInfo',
+            getProfilesInfo: 'info/getProfilesInfo',
+        })
     },
     computed: {
-        // Paginations 
-        pages() {
-            return Math.ceil(this.usersInfo.length / 20);
-        },
-        // Count users on page  
-        paginatedUsersInfo() {
-            let from = (this.pageNumber-1) * this.usersInfoCountPage;
-            let to = from + this.usersInfoCountPage;
-            return this.usersInfo.slice(from, to);
-        },
-        countEvent() {            
-            for (let i in this.usersInfo) {
-                this.usersInfo[i].countEvent = 0;
-                for (let j in this.profiles) {
-                    if (this.usersInfo[i].userName === this.profiles[j].userName) {
-                        this.usersInfo[i].countEvent++;
-                    } 
-                }
-            }
-            return this.usersInfo.countEvent
-        },
-        dateNextEvent() {
-            const array = [];
-            for (let i in this.usersInfo) {
-                this.usersInfo[i].dateNextEvent = 'Not event';
-                for (let j in this.profiles) {
-                    if (this.usersInfo[i].userName === this.profiles[j].userName) {                      
-                        let item = this.profiles[j].startDate;
-                        array.push(Date.parse(item));
-                        let date = new Date(item);
-                        // this.usersInfo[i].dateNextEvent = Math.max.apply(null, array);
-                        this.usersInfo[i].dateNextEvent = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-                    } 
-                }
-            }
-            return this.usersInfo.dateNextEvent
-        }
+        ...mapState({
+            usersInfoCountPage: state => state.info.usersInfoCountPage,
+            pageNumber: state => state.info.pageNumber,
+            editUserInfoId: state => state.info.editUserInfoId,
+            classStr: state => state.info.classStr,
+            _id: state => state.info._id,
+            userName: state => state.info.userName,
+            email: state => state.info.email,
+            phoneNumber: state => state.info.phoneNumber,
+            countEvent: state => state.info.countEvent,
+            dateNextEvent: state => state.info.dateNextEvent,
+            usersInfo: state => state.info.usersInfo,
+            profiles: state => state.info.profiles
+        }),
+        ...mapGetters({
+            pages: 'info/pages',
+            paginatedUsers: 'info/paginatedUsers',
+            countEvent: 'info/countEvent',
+            dateNextEvent: 'info/dateNextEvent'            
+        })
     },
     mounted() {
         this.getUsersInfo()

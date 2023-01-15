@@ -41,7 +41,7 @@ class ControllerUserProfile {
     async delete(req, res, next) {
         try {
             await ModelUserProfile.findByIdAndDelete(req.params.id)
-            console.log(req.body)
+            // console.log(req.body)
             return res.status(200).json({status: 'OK', message: 'Item is delete ... '});
         } catch(error) {
             next(error)

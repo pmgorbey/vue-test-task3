@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.use(cors({credentials: true, 'Access-Control-Allow-Origin': 'http://localhost:5173/test'}));
+app.use(cors({credentials: true, 'Access-Control-Allow-Origin': 'http://localhost:5173'}));
 app.use(RouterLogon);
 app.use(RouterUserInfo);
 app.use(RouterUserProfile);
@@ -46,31 +46,11 @@ const start = async (req, res) => {
         app.listen(PORT, () => {
             console.log(`Worker started on PORT ${PORT} PID ${pid}`);  
         });
-    } catch (err) {
+    } catch(err) {
         console.log(err);
     }
 }
 
-// process.on('SIGINT', () => {
-//     console.log(`Signal is SIGINT`);
-//     app.close(() => {
-//         process.exit(0);
-//     });
-// });
-
-// process.on('SIGTERM', () => {
-//     console.log(`Signal is SIGTERM`);
-//     app.close(() => {
-//         process.exit(0);
-//     });
-// });
-
-// process.on('SIGTERM2', () => {
-//     console.log(`Signal is 2`);
-//     app.close(() => {
-//         process.exit(1);
-//     });
-// });
 
 
 start();

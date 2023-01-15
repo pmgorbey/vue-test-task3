@@ -1,16 +1,27 @@
 <template>
-    <navbar></navbar>
+    <navbar :user="user" />
     <div class="app">
-        <router-view></router-view>
+        <router-view :user="user" />
     </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
+
 export default {
     components: {
         Navbar
-    }
+    },
+    data() {
+        return {
+            user: null,
+        }
+    },
+    async created() {
+      const response = await axios.get('user');
+      this.$store.dispatch('auth/user', response.data);
+  }
 }
 </script>
 

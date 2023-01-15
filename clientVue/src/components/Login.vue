@@ -1,60 +1,54 @@
 <template>
     <div class="wrapper">
-        <form @submit.prevent class="box" action="http://localhost:3000/login" method="post"> 
+        <!-- <form @submit.prevent="handleSubmit" class="box" action="http://localhost:3000/login" method="post">  -->
+        <form @submit.prevent="handleSubmit" class="box"> 
+
+            <MyError v-if="error" :error="error" />
+
             <h1>Login</h1>
-            <input type="text" name="name" placeholder="Username">
-            <input type="password" name="password" placeholder="Password">
+            <input v-focus type="email" v-model="email" name="email" placeholder="Email">
+            <input type="password" v-model="password" name="password" placeholder="Password">
             <input @click="userLogin" type="submit" value="Login">
         </form>
     </div>
 </template>
 
 <script>
-import MyInput from '@/components/UI/MyInput.vue';
-import MyDialog from '@/components/UI/MyDialog.vue';
+import axios from 'axios'
+import MyInput from '@/components/UI/MyInput.vue'
+import MyDialog from '@/components/UI/MyDialog.vue'
+import MyError from '@/components/UI/MyError.vue'
 
 export default {
     name: 'login',
     components: { 
         MyInput,
-        MyDialog 
+        MyDialog,
+        MyError 
     },
     data() {
       return {
-        
+        email: '',
+        password: '',
+        error: ''
       }
     },
     methods: {
-      async userLogin() {
-          await this.request('http://localhost:3000/login', 'POST', user)
-            // this.users.push(newUser);
-            // this.dialogVisible = false
-      },
-      // From backend
-      async request(url, method = 'GET', data = null) {
-          try {
-              const headers = {}
-              let body 
+      async handleSubmit() {
+        try{
+          const response = await axios.post('login', {
+                email: this.email,
+                password: this.password
+            })   
 
-              if(data) {
-                  headers['Content-Type'] = 'application/json' 
-                  body = JSON.stringify(data)
-              }
-
-              const response = await fetch(url, {
-                  method,
-                  headers,
-                  body
-              })
-              return await response.json();
-          } catch(error) {
-              console.warn(error.message);
-          }            
-        }
-    },
-    // async mounted() {
-    //     this.users = await this.request('http://localhost:3000/login');
-    // },
+          localStorage.setItem('token', response.data.token);
+          this.$store.dispatch('auth/user', response.data.user);
+          this.$router.push('/');
+        } catch(err) {
+          this.error = 'Invalid UserName or Password ...';
+        }   
+      }
+    }
 }
 </script>
 
@@ -93,7 +87,7 @@ form div label {
 
 input,
 textarea {
-  min-height: 30px;
+  min-height: 50px;
   border: 1px solid #000;
   background-color: rgba(0, 0, 0, 0.4);
   color: #fff;
@@ -115,7 +109,7 @@ textarea {
 
 .box {
   width: 350px;
-  padding: 40px;
+  padding: 50px;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -130,14 +124,14 @@ textarea {
   font-weight: 500;
 }
 
-.box input[type = "text"], .box input[type = "password"]{
+.box input[type = "email"], .box input[type = "password"]{
   border: 0;
   background: none;
   display: block;
   margin: 20px auto;
   text-align: center;
   border: 2px solid #3498db;
-  padding: 14px 10px;
+  padding: 10px 10px;
   width: 200px;
   outline: none;
   color: rgb(221, 220, 220); 
@@ -145,7 +139,7 @@ textarea {
   transition: 0.25s;
 }
 
-.box input[type = "text"]:focus, .box input[type = "password"]:focus{
+.box input[type = "email"]:focus, .box input[type = "password"]:focus{
   width: 280px;
   border-color: #2ecc71;
 }
@@ -154,11 +148,11 @@ textarea {
   border: 0;
   background: none;
   display: block;
-  margin: 20px auto;
+  margin: 10px auto;
   text-align: center;
   border: 2px solid #2ecc71;
   padding: 14px 40;
-  width: 100px;
+  width: 110px;
   outline: none;
   color: rgb(221, 220, 220); 
   border-radius: 24px;

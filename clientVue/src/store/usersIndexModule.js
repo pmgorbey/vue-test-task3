@@ -23,6 +23,9 @@ export const usersIndexModule = {
             let from = (state.pageNumber-1) * state.usersCountPage;
             let to = from + state.usersCountPage;
             return state.users.slice(from, to);
+        },
+        users(state) {
+            return state.users;
         }
     },
     mutations: {
@@ -63,7 +66,7 @@ export const usersIndexModule = {
             state.users.sort((a, b) => a.userName.localeCompare(b.userName));
         },
         SortBySurName({state, commit}) {
-            state.users.sort((a, b) => a.userName.localeCompare(b.userName));
+            state.users.sort((a, b) => a.surName.localeCompare(b.surName));
         },
         SortByEmail({state, commit}) {
             state.users.sort((a, b) => a.email.localeCompare(b.email));

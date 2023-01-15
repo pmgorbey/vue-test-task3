@@ -2,11 +2,11 @@
     <div class="user-page">
         <h1>User Page</h1>
 
-        <my-dialog v-model:show="dialogVisible">    
+        <!-- <my-dialog v-model:show="dialogVisible">    
             <user-create>
                 @create="createUser"
             </user-create>
-        </my-dialog>
+        </my-dialog> -->
 
         <div class="table-user">
             <table class="table"> 
@@ -36,7 +36,7 @@
         </my-button>
         
         <my-dialog v-model:show="dialogVisible">    
-            <profile-create v-model="dialogVisible"></profile-create>
+            <profile-create v-model="dialogVisible" :userNameId="this.userName"></profile-create>
         </my-dialog>
 
         <profile-index

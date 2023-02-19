@@ -1,15 +1,16 @@
-const Router = require('express');
-const {check} = require('express-validator');
-const controller = require('../controllers/ControllerUserProfile');
+const Router = require('express')
+const controller = require('../controllers/ControllerUserProfile')
+const { profileValid } = require('../middleware/mwProfileValid')
+const profileUpdate = require('../middleware/mwProfileUpdate')
+const mwLogon = require('../middleware/mwLogon')
+
+const router = new Router()
+
+router.get('/profiles/:id', mwLogon, controller.get)
+router.get('/profiles', mwLogon, controller.getAll)
+router.post('/profiles', mwLogon, profileValid, controller.create)
+router.put('/profiles/:id', mwLogon, profileUpdate, controller.update)
+router.delete('/profiles/:id', mwLogon, controller.delete)
 
 
-const router = new Router();
-
-router.get('/profiles/:id', controller.get);
-router.get('/profiles', controller.getAll);
-// router.post('/profiles', check('name', 'Імя не може бути пустим').exists(), controller.create);
-router.post('/profiles', check('userName', 'Імя не може бути пустим').notEmpty(), controller.create);
-router.put('/profiles/:id', controller.update);
-router.delete('/profiles/:id', controller.delete);
-
-module.exports = router;
+module.exports = router

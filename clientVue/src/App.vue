@@ -1,6 +1,6 @@
 <template>
     <navbar :user="user" />
-    <div class="app">
+    <div class="app"> 
         <router-view :user="user" />
     </div>
 </template>
@@ -17,7 +17,7 @@ export default {
         return {
             user: null,
         }
-    },
+    },  
     async created() {
       const response = await axios.get('user');
       this.$store.dispatch('auth/user', response.data);

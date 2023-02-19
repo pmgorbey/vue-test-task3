@@ -2,12 +2,6 @@
     <div class="user-page">
         <h1>User Page</h1>
 
-        <!-- <my-dialog v-model:show="dialogVisible">    
-            <user-create>
-                @create="createUser"
-            </user-create>
-        </my-dialog> -->
-
         <div class="table-user">
             <table class="table"> 
                 <tr class="my-table__header">
@@ -36,28 +30,41 @@
         </my-button>
         
         <my-dialog v-model:show="dialogVisible">    
-            <profile-create v-model="dialogVisible" :userNameId="this.userName"></profile-create>
+            <profile-create 
+                v-model="dialogVisible" 
+                :user="userName"
+            >
+            </profile-create>
         </my-dialog>
 
         <profile-index
             :userFilter="userName"
         />
 
+        <!-- BackendMessage -->
+        <my-dialog v-model:show="messageVisible" class="dialog__error">    
+            <div class="delete__content">
+                <h3>{{messageText}}</h3>
+            </div>
+            <div class="delete__btns">
+                <my-button @click="messageDialog">Close</my-button>
+            </div>
+        </my-dialog>
+
     </div>
 </template>
 
 <script>
 import axios from 'axios'
-import UserCreate from '@/components/UserCreate.vue'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 import ProfileIndex from '@/components/ProfileIndex.vue'
 import ProfileCreate from '@/components/ProfileCreate.vue'
+import {mapActions, mapGetters, mapState} from 'vuex'
 
 export default {
     name: 'user-page',
     components: {
-        UserCreate,
         MyDialog,
         MyButton,
         ProfileIndex,
@@ -72,11 +79,14 @@ export default {
             phoneNumber: '',  
             Profiles: [],
             dialogVisible: false,
-            // userFilter: ''
-            
+            user: ''
         }
     },
     methods: {
+        ...mapActions({
+            messageDialog: 'profile/messageDialog'
+        }),
+
         //From server
         getUsers(_id) {
             axios.get(`http://localhost:3000/users/${this.$route.params._id}`)
@@ -95,6 +105,12 @@ export default {
             this.dialogVisible = true
         }
     },
+    computed: {
+        ...mapState({
+            messageVisible: state => state.profile.messageVisible,
+            messageText: state => state.profile.messageText
+        })
+    },
     mounted() {
         this.getUsers()
     }, 
@@ -103,6 +119,17 @@ export default {
 
 <style>
 h1 {
+    text-align: center;
+    color: rgb(0, 112, 112);
+}
+.delete__content {
+    padding: 10px;
+    color: red;
+}
+.delete__btns {
+    display: flex;
+    justify-content:flex-end;
+    height: 40px;
     text-align: center;
     color: rgb(0, 112, 112);
 }

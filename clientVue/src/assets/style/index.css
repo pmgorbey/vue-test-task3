@@ -1,0 +1,63 @@
+h1 {
+    text-align: center;
+    color: rgb(0, 112, 112);
+}
+.table-user {
+    max-width: 100%;
+    margin: 15px auto;
+    padding-top: 20px;
+    border: 2px solid teal;
+}
+.table {
+     width: 100%;
+}
+.my-table__header {
+    display: flex;
+    justify-content: space-around;
+}
+.my-table__header p, th {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    flex-basis: 20%;
+    text-align: center;
+    border-bottom: 2px solid teal;
+    padding-bottom: 15px;
+    cursor: pointer;
+    color: rgb(0, 112, 112);
+}
+td {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    flex-basis: 20%;
+    text-align: center;
+    border-bottom: 2px solid teal;
+    padding-bottom: 15px;
+    cursor: pointer;
+    color: rgb(0, 112, 112);
+}
+.my-table-pagination {
+    display: flex;
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.table-user-row {
+    display: flex;
+    justify-content: space-around;
+}
+.row {
+    flex-basis: 20%;
+    text-align: left;
+    padding: 7px 15px;
+    border-bottom: 1px solid teal;
+    margin: 15px;
+}
+.user__btns {
+    display: flex;
+    margin: 5px;
+}

@@ -18,11 +18,18 @@
                                 <th class="row">{{profile.userName}}</th>
                                 <td class="row">{{profile.title}}</td>
                                 <td class="row">{{profile.description}}</td>
-                                <td class="row">{{profile.startDate}}</td>
-                                <td class="row">{{profile.endDate}}</td>
+                                <td class="row">{{new Date(profile.startDate).toLocaleDateString()}}</td>
+                                <td class="row">{{new Date(profile.endDate).toLocaleDateString()}}</td>
                                 <td class="row">
                                     <my-button
-                                        @click.prevent="changeEditProfileId(profile._id, profile.userName, profile.title, profile.description, profile.startDate, profile.endDate)"
+                                        @click.prevent="changeEditProfileId({
+                                            _id: profile._id, 
+                                            userName: profile.userName, 
+                                            title: profile.title, 
+                                            description: profile.description, 
+                                            startDate: profile.startDate, 
+                                            endDate: profile.endDate
+                                        })"
                                          style="margin-left: 10px"
                                     >
                                         Edit
@@ -39,14 +46,21 @@
                         <tr :class="this.isEdit(profile._id) ? '' : classStr">
                             <transition-group name="profile-index">
                                 <th class="row">{{profile._id}}</th>
-                                <td class="row"><input v-model="userName" type="text"></td>
-                                <td class="row"><input v-model="title" type="text"></td>
-                                <td class="row"><input v-model="description" type="text"></td>
-                                <td class="row"><input v-model="startDate" type="date"></td>
-                                <td class="row"><input v-model="endDate" type="date"></td>
+                                <td class="row"><input v-model="profile.userName" type="text" disabled></td>
+                                <td class="row"><input v-model="profile.title" type="text"></td>
+                                <td class="row"><input v-model="profile.description" type="text"></td>
+                                <td class="row"><input v-model="profile.startDate" type="date"></td>
+                                <td class="row"><input v-model="profile.endDate" type="date"></td>
                                 <td class="row">
                                     <my-button
-                                        @click.prevent="updateProfile(profile._id)"
+                                        @click.prevent="updateProfile({
+                                            _id: profile._id, 
+                                            userName: profile.userName, 
+                                            title: profile.title, 
+                                            description: profile.description, 
+                                            startDate: profile.startDate, 
+                                            endDate: profile.endDate
+                                        })"
                                      >
                                         Update
                                     </my-button>
@@ -58,26 +72,37 @@
                 </template>
             </table>
 
-            <!-- Paginations -->
+            <!-- Pagination -->
             <div class="my-table-pagination">
                 <div class="page"
-                    v-for="page in pages"
-                    :key="page"
-                    :class="{'page__selected' : page === pageNumber}"
-                    @click="pageClick(page)"
+                    v-for="pageCurrent in pageTotal"
+                    :key="pageCurrent"
+                    :class="{'page__selected' : page === pageCurrent}"
+                    @click="pageClick(pageCurrent)"
                 >
-                    {{ page }}                    
+                    {{ pageCurrent }}                    
                 </div>
             </div>
-        </div>  
+        </div>
+
+        <!-- BackendMessage -->
+        <my-dialog v-model:show="messageVisible" class="dialog__error">    
+            <div class="delete__content">
+                <h3>{{messageText}}</h3>
+            </div>
+            <div class="delete__btns">
+                <my-button @click="messageDialog">Close</my-button>
+            </div>
+        </my-dialog>
+
     </div>
 </template>
 
 <script>
-import axios from 'axios'
 import ProfileCreate from '@/components/ProfileCreate.vue'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
+import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
 
 export default {
     name: 'profile-index',
@@ -91,95 +116,41 @@ export default {
             type: String
         }
     },
-    data() {
-        return {
-            profilesCountPage: 20,
-            pageNumber: 1,
-            profiles: [],
-            editProfileId: null,
-            classStr: 'classNone',
-            _id: '',
-            userName: '',
-            title: '',
-            description: '',
-            startDate: '',
-            endDate: ''
-        }
-    },
     methods: {
-        // Paginations
-        pageClick(page) {
-            this.pageNumber = page;
-        },
-        // Sort
-        SortByUserName() {
-            this.profiles.sort((a, b) => a.userName.localeCompare(b.userName));
-        },
-        SortByTitle() {
-            this.profiles.sort((a, b) => a.title.localeCompare(b.title));
-        },
-        SortByDescription() {
-            this.profiles.sort((a, b) => a.description.localeCompare(b.description));
-        },
-        SortByStartDate() {
-            this.profiles.sort((a, b) => a.startDate.localeCompare(b.startDate));
-        },
-        SortByEndDate() {
-            this.profiles.sort((a, b) => a.endDate.localeCompare(b.endDate));
-        },
-
-        //Request to Server
-        getProfiles() {
-            axios.get(`http://localhost:3000/profiles`)
-            .then(response => {
-                this.profiles = response.data;
-            })
-        },
-        updateProfile(_id) {
-            this.editProfileId = null;
-
-            axios.put(`http://localhost:3000/profiles/${_id}`, {
-                userName: this.userName,
-                title: this.title,
-                description: this.description,
-                startDate: this.startDate,
-                endDate: this.endDate
-            })
-            .then(response => {
-                this.getProfiles()
-            })
-        },
-        deleteProfileId(_id) {
-            axios.delete(`http://localhost:3000/profiles/${_id}`)
-            .then(response => {
-                this.getProfiles()
-            })
-        },
-        changeEditProfileId(_id, userName, title, description, startDate, endDate) {
-            this.editProfileId = _id;
-
-            this.userName = userName,
-            this.title = title,
-            this.description = description,
-            this.startDate = startDate,    
-            this.endDate = endDate
-        },
+        ...mapActions({
+            pageClick: 'profile/pageClick',
+            SortByUserName: 'profile/SortByUserName',
+            SortByTitle: 'profile/SortByTitle',
+            SortByDescription: 'profile/SortByDescription',
+            SortByStartDate: 'profile/SortByStartDate',
+            SortByEndDate: 'profile/SortByEndDate',
+            getProfiles: 'profile/getProfiles',
+            deleteProfileId: 'profile/deleteProfileId',
+            changeEditProfileId: 'profile/changeEditProfileId',
+            isEdit: 'profile/isEdit',
+            updateProfile: 'profile/updateProfile',
+            messageDialog: 'profile/messageDialog'
+        }),
 
         isEdit(_id) {
             return this.editProfileId === _id
         }
     },
     computed: {
-        // Paginations 
-        pages() {  
-            return Math.ceil(this.profiles.length / 20);
-        },
-        // Count users on page
-        paginatedProfiles() {
-            let from = (this.pageNumber-1) * this.profilesCountPage;
-            let to = from + this.profilesCountPage;
-            return this.profiles.slice(from, to);
-        },
+        ...mapState({
+            profiles: state => state.profile.profiles,
+            page: state => state.profile.page,
+            pageTotal: state => state.profile.pageTotal,
+            editProfileId: state => state.profile.editProfileId,
+            classStr: state => state.profile.classStr,
+
+        }),
+        ...mapGetters({
+            profiles: 'profile/getPrifiles',
+            page: 'profile/getPage',
+            pageTotal: 'profile/getPageTotal',
+            getProfileId: 'prifile/getEditProfileId'
+        }),
         userFilter() {
             return this.profiles.filter((p) => {
                 return p.userName == this.userFilter;
@@ -188,90 +159,16 @@ export default {
     },
     mounted() {
         this.getProfiles()
+    },
+    watch: {
+        page() {
+            this.getProfiles()
+        }
     }
 }
 </script>
 
-<style>
-h1 {
-    text-align: center;
-    color: rgb(0, 112, 112);
-}
-.table-user {
-    max-width: 100%;
-    margin: 15px auto;
-    padding-top: 20px;
-    border: 2px solid teal;
-}
-.table {
-     width: 100%;
-}
-.my-table__header {
-    display: flex;
-    justify-content: space-around;
-}
-.my-table__header p, th {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-.my-table-pagination {
-    display: flex;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.page {
-    padding: 7px;
-    margin: 0 10px 10px 0;
-    
-    border-bottom: 2px solid teal;
-}
-.page:hover {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.page__selected {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.table-user-row {
-    display: flex;
-    justify-content: space-around;
-}
-.row {
-    flex-basis: 20%;
-    text-align: left;
-    padding: 7px 15px;
-    border-bottom: 1px solid teal;
-    margin: 15px;
-}
-.user__btns {
-    display: flex;
-    margin: 5px;
-}
+<style scoped>
 /* Animation add and delete */
 .profile-index-item {
   display: inline-block;
@@ -295,3 +192,5 @@ td {
     display: none;
 }
 </style>
+<style src="@/assets/style/page.css"></style>
+<style src="@/assets/style/index.css"></style>

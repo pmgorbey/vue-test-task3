@@ -36,15 +36,15 @@
                 </template>
             </table>
             
-            <!-- Paginations -->
+            <!-- Pagination -->
             <div class="my-table-pagination">
                 <div class="page"
-                    v-for="page in pages"
-                    :key="page"
-                    :class="{'page__selected' : page === pageNumber}"
-                    @click="pageClick(page)"
+                    v-for="pageCurrent in pageTotalInfo"
+                    :key="pageCurrent"
+                    :class="{'page__selected' : pageInfo === pageCurrent}"
+                    @click="pageClick(pageCurrent)"
                 >
-                    {{ page }}
+                    {{ pageCurrent }}
                 </div>
             </div>
         </div> 
@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
@@ -63,16 +62,13 @@ export default {
         MyDialog,
         MyButton
     },
-    data() {
-        return {
-
+    // Sorting on Server
+    props: {
+        selectedSort: {
+            type: String
         }
     },
     methods: {
-        // Paginations
-        pageClick(page) {
-            this.pageNumber = page;
-        },
         isEdit(_id) {
             return this.editUserInfoId === _id
         },
@@ -96,16 +92,15 @@ export default {
             SortByPhoneNumber: 'info/SortByPhoneNumber',
             SortByCountEvent: 'info/SortByCountEvent',
             SortByDateNextEvent: 'info/SortByDateNextEvent',
-    
             //Request to Server
             getUsersInfo: 'info/getUsersInfo',
             getProfilesInfo: 'info/getProfilesInfo',
+            // Pagination
+            pageClick: 'info/pageClick'
         })
     },
     computed: {
         ...mapState({
-            usersInfoCountPage: state => state.info.usersInfoCountPage,
-            pageNumber: state => state.info.pageNumber,
             editUserInfoId: state => state.info.editUserInfoId,
             classStr: state => state.info.classStr,
             _id: state => state.info._id,
@@ -115,11 +110,12 @@ export default {
             countEvent: state => state.info.countEvent,
             dateNextEvent: state => state.info.dateNextEvent,
             usersInfo: state => state.info.usersInfo,
-            profiles: state => state.info.profiles
+            profiles: state => state.info.profiles,
+            // Pagination
+            pageInfo: state => state.info.pageInfo,
+            pageTotalInfo: state => state.info.pageTotalInfo
         }),
         ...mapGetters({
-            pages: 'info/pages',
-            paginatedUsers: 'info/paginatedUsers',
             countEvent: 'info/countEvent',
             dateNextEvent: 'info/dateNextEvent'            
         })
@@ -127,90 +123,20 @@ export default {
     mounted() {
         this.getUsersInfo()
         this.getProfilesInfo()
+        
+    },
+    watch: {
+        pageInfo() {
+            this.getUsersInfo()
+        },
+        selectedSort() {
+            this.getUsersInfo(this.selectedSort)
+        }
     }
 }
 </script>
 
 <style>
-h1 {
-    text-align: center;
-    color: rgb(0, 112, 112);
-}
-.table-user {
-    max-width: 100%;
-    margin: 15px auto;
-    padding-top: 20px;
-    border: 2px solid teal;
-}
-.table {
-     width: 100%;
-}
-.my-table__header {
-    display: flex;
-    justify-content: space-around;
-}
-.my-table__header p, th {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-.my-table-pagination {
-    display: flex;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.page {
-    padding: 7px;
-    margin: 0 10px 10px 0;
-    
-    border-bottom: 2px solid teal;
-}
-.page:hover {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.page__selected {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.table-user-row {
-    display: flex;
-    justify-content: space-around;
-}
-.row {
-    flex-basis: 20%;
-    text-align: left;
-    padding: 7px 15px;
-    border-bottom: 1px solid teal;
-    margin: 15px;
-}
-.user__btns {
-    display: flex;
-    margin: 5px;
-}
 /* Animation add and delete */
 .user-index-info-store-item {
   display: inline-block;
@@ -234,3 +160,5 @@ td {
     display: none;
 }
 </style>
+<style src="@/assets/style/page.css"></style>
+<style src="@/assets/style/index.css"></style>

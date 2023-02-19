@@ -1,6 +1,7 @@
 <template>
-<div class="wrapper">
-  <div class="wrapper__back">
+<div class="wrapper" >
+  <div class="wrapper__back img">
+    
     <h3 v-if="user"> Hi, {{user.email}}</h3>
     <h3 v-if="!user">You are not logged in ... </h3>
   </div> 
@@ -26,7 +27,8 @@ export default {
 }
 
 .wrapper__back {
-    min-height: calc(100px);
+    background: url('@/assets/img-1.jpg');
+    min-height: calc(100vh - 100px);
     font-family: "Montserrat", sans-serif;
     font-size: 20px;
     border: 0;
@@ -51,4 +53,9 @@ h1, h3 {
   font-size: 24px;
   margin: 25px;
 } 
+
+.img {
+  width: 100%;
+  height: auto;
+}
 </style>

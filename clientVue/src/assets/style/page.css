@@ -1,0 +1,16 @@
+.page {
+    padding: 7px;
+    margin: 0 10px 10px 0;
+    
+    border-bottom: 2px solid teal;
+}
+.page:hover {
+    background: teal;
+    cursor: pointer;
+    color: white;
+}
+.page__selected {
+    background: teal;
+    cursor: pointer;
+    color: white;
+}

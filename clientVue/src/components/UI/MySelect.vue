@@ -2,8 +2,9 @@
     <select 
         :value="modelValue" 
         @change="changeOption"
+        class="select"
     >
-        <option disabled value="">Choose something from the list</option>
+        <option disabled value="">Sorting on the Server</option>
         <option 
             v-for="option in options"
             :key="option.value"
@@ -24,5 +25,11 @@ export default {
 </script>
 
 <style>
-
+.select {
+    text-align: center;
+    border: 1px solid teal;
+    color: rgb(0, 112, 112);
+    font-weight: 800;
+    padding: 5px;
+}
 </style>

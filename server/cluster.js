@@ -23,5 +23,5 @@ if (cluster.isMaster) {
 }
 
 if (cluster.isWorker) {
-    require('../app');
+    require('./app');
 }

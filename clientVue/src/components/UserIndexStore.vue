@@ -20,7 +20,6 @@
                                 <td class="row">{{user.email}}</td>
                                 <td class="row">{{user.phoneNumber}}</td>
                                 <td class="row">
-                                    <!-- @click.prevent="changeEditUserId({_id: this._id, userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber})" -->
                                     <my-button
                                         @click.prevent="changeEditUserId(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
                                          style="margin-left: 10px"
@@ -28,7 +27,7 @@
                                         Edit
                                     </my-button>
                                     <my-button
-                                        @click.prevent="deleteUserId(user._id)"
+                                        @click.prevent="deleteUserId({_id: user._id, userName: user.userName})"
                                          style="margin-left: 10px"
                                     >
                                         Delete
@@ -36,13 +35,38 @@
                                 </td>     
                         </transition-group>                       
                            
-                        <tr :class="isEdit(user._id) ? '' : classStr">
+                        <tr :class="isEdit(user._id) ? '' : classStr" class="input__validates">
                             <transition-group name="user-index-store">
                                 <th class="row">{{user._id}}</th>
-                                <td class="row"><input v-model="userName" type="text"></td>
-                                <td class="row"><input v-model="surName" type="text"></td>
-                                <td class="row"><input v-model="email" type="text"></td>
-                                <td class="row"><input v-model="phoneNumber" type="text"></td>
+
+                                <div class="input__validate">
+                                    <td class="row"><input v-model="userName" type="text" :style="{'font-weight': 700, color: 'teal'}" disabled></td>
+                                    <span v-if="v$.userName.$error && v$.userName.$errors.length"> 
+                                        {{ this.v$.userName.$errors[0].$message }}
+                                    </span>    
+                                </div>
+
+                                <div class="input__validate">
+                                    <td class="row"><input v-model="surName" type="text"></td>
+                                    <span v-if="v$.surName.$error && v$.surName.$errors.length"> 
+                                        {{ this.v$.surName.$errors[0].$message }}
+                                    </span>
+                                </div>
+
+                                <div class="input__validate">
+                                    <td class="row"><input v-model="email" type="text"></td>
+                                    <span v-if="v$.email.$error && v$.email.$errors.length"> 
+                                        {{ this.v$.email.$errors[0].$message }}
+                                    </span>
+                                </div>
+                                
+                                <div class="input__validate">
+                                    <td class="row"><input v-model="phoneNumber" type="text"></td>
+                                    <span v-if="v$.phoneNumber.$error && v$.phoneNumber.$errors.length"> 
+                                        {{ this.v$.phoneNumber.$errors[0].$message }}
+                                    </span>
+                                </div>
+                                
                                 <td class="row">
                                     <my-button
                                         @click.prevent="updateUser(user._id, user.userName, user.surName, user.email, user.phoneNumber)"
@@ -57,18 +81,29 @@
                 </template>
             </table>
 
-            <!-- Paginations -->
+            <!-- Pagination -->
             <div class="my-table-pagination">
                 <div class="page"
-                    v-for="page in pages"
-                    :key="page"
-                    :class="{'page__selected' : page === pageNumber}"
-                    @click="pageClick(page)"
+                    v-for="pageCurrent in pageTotal"
+                    :key="pageCurrent"
+                    :class="{'page__selected' : page === pageCurrent}"
+                    @click="pageClick(pageCurrent)"
                 >
-                    {{ page }}                    
+                    {{ pageCurrent }}                    
                 </div>
             </div>
         </div>  
+
+        <!-- BackendMessage -->
+        <my-dialog v-model:show="messageVisible" class="dialog__error">    
+            <div class="delete__content">
+                <h3>{{messageText}}</h3>
+            </div>
+            <div class="delete__btns">
+                <my-button @click="messageDialog">Close</my-button>
+            </div>
+        </my-dialog>
+
     </div>
 </template>
 
@@ -77,6 +112,9 @@ import axios from 'axios'
 import MyDialog from '@/components/UI/MyDialog.vue'
 import MyButton from '@/components/UI/MyButton.vue'
 import {mapState, mapGetters, mapMutations, mapActions} from 'vuex'
+//vuelidate
+import { useVuelidate } from '@vuelidate/core'
+import { required, email, minLength, maxLength, numeric} from '@vuelidate/validators'
 
 export default {
     name: 'user-index-store',
@@ -84,29 +122,94 @@ export default {
         MyDialog,
         MyButton
     },
+    // Sorting on Server
+    props: {
+        selectedSort: {
+            type: String
+        },
+        // modelValue: {
+        //     type: Boolean
+        // }
+    },
     data() {
         return {
+            v$: useVuelidate(),
             _id: '',
             userName: '',
             surName: '',
             email: '',
             phoneNumber: '',
             editUserId: null,
+            // Error message
+            messageVisible: false,
+            messageText: ''
+        }
+    },
+    validations() {
+        return {
+            userName: {
+                required,
+                minLength: minLength(4),
+                maxLength: maxLength(12),
+                // validateUserName: validate.validateUserName               
+            },
+            surName: {
+                required,
+                minLength: minLength(4),
+                maxLength: maxLength(12)
+            },
+            email: {
+                required,
+                email
+            },
+            phoneNumber: {
+                required,
+                numeric,
+                minLength: minLength(10),
+                maxLength: maxLength(10)
+            }        
         }
     },
     methods: {
         updateUser(_id) {
             this.editUserId = null;
 
-            axios.put(`http://localhost:3000/users/${_id}`, {
-                userName: this.userName,
-                surName: this.surName,
-                email: this.email,
-                phoneNumber: this.phoneNumber,
-            })
-            .then(response => {
-                this.getUsers()
-            })
+            this.v$.$validate();
+            // Vuelidate + Validate Name (!this.errorUserName == '')
+            if (!this.v$.$error) {
+                axios.put(`http://localhost:3000/users/${_id}`, {
+                    userName: this.userName,
+                    surName: this.surName,
+                    email: this.email,
+                    phoneNumber: this.phoneNumber,
+                })
+                .then(response => {
+                    this.getUsers()
+                    // this.$emit('update:modelValue', true)
+                })
+                .catch((err => {
+                    // alert(`Backend: ${err.response.data.message} \n ${err.response.data.errors}`)
+                    this.messageText = `Backend: ${err.response.data.message} \n ${err.response.data.errors}`
+                    this.messageVisible = true
+                }))
+            }
+            else {
+                if (this.v$.surName.$errors[0]) {
+                    this.messageText = `FrontEnd: Form failed validation: ${this.v$.surName.$errors[0].$message} `
+                    this.messageVisible = true
+                }
+                else if (this.v$.email.$errors[0]) {
+                    this.messageText = `FrontEnd: Form failed validation: ${this.v$.email.$errors[0].$message} `
+                    this.messageVisible = true
+                }
+                else if (this.v$.phoneNumber.$errors[0]) {
+                    this.messageText = `FrontEnd: Form failed validation: ${this.v$.phoneNumber.$errors[0].$message} `
+                    this.messageVisible = true
+                }
+                // alert(`FrontEnd: Form failed validation ... `);   
+                // console.log(this.v$.$errors);
+                // console.log(this.v$.email.$errors[0].$message)
+            }
         },
         changeEditUserId(_id, userName, surName, email, phoneNumber) {
             this.editUserId = _id;
@@ -119,9 +222,11 @@ export default {
         isEdit(_id) {
             return this.editUserId === _id
         },
+        // Error message
+        messageDialog() {
+            this.messageVisible = false
+        },
         ...mapMutations({
-            setUserCountPage: 'index/setUserCountPage',
-            setPageNumber: 'index/setPageNumber',
             setUsers: 'index/setUsers',
             setEditUserId: 'index/setEditUserId',
             setClassStr: 'index/setClassStr',
@@ -129,7 +234,9 @@ export default {
             setUserName: 'index/setUserName',
             setSurName: 'index/setSurName',
             setEmail: 'index/setEmail',
-            setPhoneNumber: 'index/setPhoneNumber' 
+            setPhoneNumber: 'index/setPhoneNumber', 
+            //Delete User
+            setDeleteUser: 'index/setDeleteUser'
         }),
         ...mapActions({
             SortByUserName: 'index/SortByUserName',
@@ -137,113 +244,48 @@ export default {
             SortByEmail: 'index/SortByEmail',
             SortByPhoneNumber: 'index/SortByPhoneNumber',
             getUsers: 'index/getUsers', 
-            deleteUserId: 'index/deleteUserId'
+            deleteUserId: 'index/deleteUserId',
+            // Pagination
+            pageClick: 'index/pageClick',
+            //Delete User
+            getProfilesInfo: 'index/getProfilesInfo'
+
         })
     },
     computed: {
         ...mapState({
-            usersCountPage: state => state.index.usersCountPage,
-            pageNumber: state => state.index.pageNumber,
             users: state => state.index.users,
             editUserId: state => state.index.editUserId,
+            // View table Edit
             classStr: state => state.index.classStr,
             _id: state => state.index._id,
             userName: state => state.index.userName,
             surName: state => state.index.surName,
             email: state => state.index.email,
-            phoneNumber: state => state.index.phoneNumber
-        }),
-        ...mapGetters({
-            pages: 'index/pages',
-            paginatedUsers: 'index/paginatedUsers'            
+            phoneNumber: state => state.index.phoneNumber,
+            // Pagination
+            page: state => state.index.page,
+            pageTotal: state => state.index.pageTotal,
+            //Delete User
+            deleteUser: state => state.index.deleteUser
         })
     },
     mounted() {
         this.getUsers();
+        this.getProfilesInfo();
+    },
+    watch: {
+        page() {
+            this.getUsers();
+        },
+        selectedSort() {
+            this.getUsers(this.selectedSort)    
+        }
     }
 }
 </script>
 
 <style>
-h1 {
-    text-align: center;
-    color: rgb(0, 112, 112);
-}
-.table-user {
-    max-width: 100%;
-    margin: 15px auto;
-    padding-top: 20px;
-    border: 2px solid teal;
-}
-.table {
-     width: 100%;
-}
-.my-table__header {
-    display: flex;
-    justify-content: space-around;
-}
-.my-table__header p, th {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    font-weight: bold;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-td {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    flex-basis: 20%;
-    text-align: center;
-    border-bottom: 2px solid teal;
-    padding-bottom: 15px;
-    cursor: pointer;
-    color: rgb(0, 112, 112);
-}
-.my-table-pagination {
-    display: flex;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-}
-.page {
-    padding: 7px;
-    margin: 0 10px 10px 0;
-    
-    border-bottom: 2px solid teal;
-}
-.page:hover {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.page__selected {
-    background: teal;
-    cursor: pointer;
-    color: white;
-}
-.table-user-row {
-    display: flex;
-    justify-content: space-around;
-}
-.row {
-    flex-basis: 20%;
-    text-align: left;
-    padding: 7px 15px;
-    border-bottom: 1px solid teal;
-    margin: 15px;
-}
-.user__btns {
-    display: flex;
-    margin: 5px;
-}
 /* Animation add and delete */
 .user-index-store-item {
   display: inline-block;
@@ -258,7 +300,6 @@ td {
   opacity: 0;
   transform: translateX(30px);
 }
-
 /* Animation move */
 .user-index-store-move {
   transition: transform 0.5s ease;
@@ -266,4 +307,16 @@ td {
 .classNone {
     display: none;
 }
+/* Validation */
+.input__validates {
+    display:flex;
+    flex-direction: column;
+}
+.input__validate {
+  display: flex;
+  flex-direction: column;
+  color: teal;
+}
 </style>
+<style src="@/assets/style/page.css"></style>
+<style src="@/assets/style/index.css"></style>

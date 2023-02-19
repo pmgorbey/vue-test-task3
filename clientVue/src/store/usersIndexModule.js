@@ -2,39 +2,38 @@ import axios from 'axios'
 
 export const usersIndexModule = {
     state: () => ({
-        usersCountPage: 20,
-        pageNumber: 1,
         users: [],
+        errorUserName: '',
         editUserId: null,
         classStr: 'classNone',
         _id: '',
         userName: '',
         surName: '',
         email: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        // Pagination
+        page: 1,
+        pageTotal: 0,
+        //Delete User
+        deleteUser: [],
+        isUser: 0,
+        // Error message
+        messageVisible: false,
+        messageText: ''
     }),
     getters: {
-        // Paginations 
-        pages(state) {
-            return Math.ceil(state.users.length / 10);
-        },
-        // Count users on page
-        paginatedUsers(state) {
-            let from = (state.pageNumber-1) * state.usersCountPage;
-            let to = from + state.usersCountPage;
-            return state.users.slice(from, to);
-        },
         users(state) {
             return state.users;
+        },
+        // nameValidation(back)
+        errorUserName(state) {
+            return state.errorUserName
+        },
+        userName(state) {
+            return state.userName
         }
     },
     mutations: {
-        setUserCountPage(state, usersCountPage) {
-            state.usersCountPage = usersCountPage;
-        },
-        setPageNumber() {
-            state.pageNumber = pageNumber;
-        },
         setUsers(state, users) {
             state.users = users;
         },
@@ -58,6 +57,31 @@ export const usersIndexModule = {
         },
         setPhoneNumber(state, phoneNumber) {
             state.phoneNumber = phoneNumber;
+        },
+        // nameValidation(back)
+        setErrorUserName(state, errorUserName) {
+            state.errorUserName = errorUserName;
+        },
+        // Pagination
+        setPage(state, page) {
+            state.page = page
+        },
+        setPageTotal(state, pageTotal) {
+            state.pageTotal = pageTotal
+        },
+        //Delete User
+        setDeleteUser(state, deleteUser) {
+            state.deleteUser = deleteUser
+        },
+        setIsUser(state, isUser) {
+            state.isUser = isUser
+        },
+        // Error message
+        setMessageVisible(state, messageVisible) {
+            state.messageVisible = messageVisible
+        },
+        setMessageText(state, messageText) {
+            state.messageText = messageText
         }
     },
     actions: {
@@ -74,15 +98,27 @@ export const usersIndexModule = {
         SortByPhoneNumber({state, commit}) {
             state.users.sort((a, b) => a.phoneNumber - b.phoneNumber);
         },
-
-        //Request to Server
-        getUsers({state, commit}) {
-            axios.get(`http://localhost:3000/users`)
-            .then(response => {
-                commit('setUsers', response.data);
-            })
+        // Pagination
+        pageClick({commit}, pageCurrent) {
+            commit('setPage', pageCurrent)           
         },
-        async createUser({dispatch}, data) {
+        //Request to Server
+        async getUsers({state, commit}, selectedSort) {
+            if (!selectedSort) {
+                await axios.get(`http://localhost:3000/users?page=${state.page}`)
+                .then(response => {
+                    commit('setUsers', response.data.users);
+                    commit('setPageTotal', response.data.pageTotal)
+                })
+            } else {
+                await axios.get(`http://localhost:3000/users?page=${state.page}&sort=${selectedSort}`)
+                .then(response => {
+                    commit('setUsers', response.data.users);
+                    commit('setPageTotal', response.data.pageTotal)
+                })
+            }
+        },
+        async createUser({commit, dispatch, state}, data) {
             await axios.post('http://localhost:3000/users', {
                 userName: data.userName,
                 surName: data.surName,
@@ -91,13 +127,61 @@ export const usersIndexModule = {
             })
             .then(response => {
                 dispatch('getUsers')
+                commit('setMessageText', `BackEnd: Form successfully submitted ... `)
+                commit('setMessageVisible', true)
+            })
+            .catch(err => {
+                // Validate Name
+                // commit('setMessageText', `BackEnd: ${err.response.data.errors}`)
+                commit('setMessageText', `BackEnd: ${err.response.data.message}`)
+                commit('setMessageVisible', true)
             })
         },
-        async deleteUserId({ dispatch}, _id) {
-            await axios.delete(`http://localhost:3000/users/${_id}`)
+        
+        // Delete: Deletion User with condition
+        async getProfilesInfo({commit}) {
+            await axios.get(`http://localhost:3000/profiles`)
             .then(response => {
-                dispatch('getUsers')
+                commit('setDeleteUser', response.data.profiles);    
             })
+        },
+        async deleteUserId({ state, commit, dispatch }, data) {
+            dispatch('getProfilesInfo')        
+            for (let i = 0; i < state.deleteUser.length; i++) {
+                if (state.deleteUser[i].userName == data.userName) {
+                    // alert('Deletion is not possible! User has open tasks ...')
+                    commit('setMessageVisible', true)
+                    commit('setMessageText', 'Deletion is not possible! User has open tasks ...')
+                    return commit('setIsUser', state.isUser+=1)
+                } else {
+                    commit('setIsUser', state.isUser=0)
+                }
+            }
+            if (state.isUser !== 1) {
+                await axios.delete(`http://localhost:3000/users/${data._id}`)
+                .then(response => {
+                    dispatch('getUsers')
+                }) 
+            } else {
+                // return alert('Deletion is not possible! User has open tasks ...')
+                commit('setErrorVisible', true)
+                return commit('setMessageError', 'Deletion is not possible! User has open tasks ...')
+            }
+        },
+
+        // Delete: Include to test server side control
+        // async deleteUserId({ dispatch }, data) {
+        //     await axios.delete(`http://localhost:3000/users/${data._id}?userName=${data.userName}`, { 
+        //        userName: data.userName
+        //     })
+        //     .then(response => {
+        //         dispatch('getUsers')
+        //     })
+        // }
+
+        // Error message
+        messageDialog({commit}) {
+            commit('setMessageVisible', false)
         }
     },
     namespaced: true

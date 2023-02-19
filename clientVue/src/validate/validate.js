@@ -5,7 +5,7 @@ const validate = {
             arr.push(this.users[i].userName)
             arr.forEach((item) => {
                 if (value == item) {
-                    this.v$.value.$errors[0].$message = 'Error: User Name is already'
+                    this.v$.userName.$errors[0].$message = `User Name ${this.userName} is already`
                 } else {
                     return true
                 }

@@ -38,5 +38,6 @@ export default {
     min-height: 50px;
     min-width: 300px;
     padding: 20px;
+    border: 1px solid teal;
 }
 </style>

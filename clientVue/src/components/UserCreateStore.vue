@@ -9,9 +9,11 @@
                     type="text" 
                     placeholder="UserName"
                 />
-                <span v-if="v$.userName.$error"> 
+                <span v-if="v$.userName.$error && v$.userName.$errors.length"> 
                     {{ this.v$.userName.$errors[0].$message }}
                 </span>
+                <!-- Validate Name -->
+                <!-- <span v-if="errorUserName">{{errorUserName}}</span> -->
             </div>
             <div class="input__validate">
                 <my-input 
@@ -85,7 +87,7 @@ export default {
                 required,
                 minLength: minLength(4),
                 maxLength: maxLength(12),
-                validateUserName: validate.validateUserName
+                // validateUserName: validate.validateUserName               
             },
             surName: {
                 required,
@@ -106,47 +108,36 @@ export default {
     },
     methods: {
          multiple() {
-            // this.createUser({userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber});
             this.validateUser();
             this.closeDialog();
         },
-        closeDialog() {
-            if (this.v$.$errors.length == 0) {
+        async closeDialog() {
+            // Vuelidate + Validate Name (!this.errorUserName == '')
+            if (this.v$.$errors.length == 0 && this.errorUserName == '') {
                 this.$emit('update:modelValue', false)
             }
         },
         validateUser() {
             this.v$.$validate();
-            if (!this.v$.$error) {
-                alert(`Form successfully submitted ... `);    
+            // Vuelidate + Validate Name (!this.errorUserName == '')
+            if (!this.v$.$error && this.errorUserName == '') { 
                 this.createUser({userName: this.userName, surName: this.surName, email: this.email, phoneNumber: this.phoneNumber});
+                // alert(`FrontEnd: Form successfully submitted ... `);   
                 // console.log(this.v$.$errors);
             }
-            else {
-                alert(`Form failed validation ... `);   
-                // console.log(this.v$.$errors);
-                // console.log(this.v$.email.$errors[0].$message)
-            }
+            // else {
+            //     alert(`FrontEnd: Form failed validation ... `);   
+            //     // console.log(this.v$.$errors);
+            //     // console.log(this.v$.email.$errors[0].$message)
+            // }
         },
-        ...mapMutations({
-            setUserName: 'index/setUserName',
-            setSurName: 'index/setSurName',
-            setEmail: 'index/setEmail',
-            setPhoneNumber: 'index/setPhoneNumber' 
-        }),
         ...mapActions({
             createUser: 'index/createUser'
         })
     }, 
     computed: {
-        ...mapState({
-            userName: state => state.index.userName,
-            surName: state => state.index.surName,
-            email: state => state.index.email,
-            phoneNumber: state => state.index.phoneNumber
-        }),
         ...mapGetters({
-            users: 'index/users'
+            errorUserName: 'index/errorUserName'
         })
     }
 }
@@ -161,5 +152,11 @@ form {
   display: flex;
   flex-direction: column;
   color: teal;
+}
+.field__error {
+    padding: 15px;
+    color: red;
+    font-size: 18px;
+    font-weight:400;
 }
 </style>

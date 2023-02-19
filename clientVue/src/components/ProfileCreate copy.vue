@@ -64,11 +64,22 @@
             </my-button>
         </form>
 
+        
+        <!-- BackendMessage -->
+        <my-dialog v-model:show="messageVisible" class="dialog__error">    
+            <div class="delete__content">
+                <h3>{{messageText}}</h3>
+            </div>
+            <div class="delete__btns">
+                <my-button @click="messageDialog">Close</my-button>
+            </div>
+        </my-dialog>
+
     </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import axios from 'axios'
 import MyInput from '@/components/UI/MyInput.vue';
 //vuelidate
 import { useVuelidate } from '@vuelidate/core'
@@ -84,7 +95,7 @@ export default {
         modelValue: {
             type: String
         },
-        user: {
+        messageVisible: {
             type: String
         }
     },
@@ -130,35 +141,53 @@ export default {
     },
     methods: {
         multiple() {
-            this.validateProfile()
+            this.createProfile()
             this.closeDialog()
         },
-        validateProfile() {
+        createProfile() {
             this.v$.$validate();
             if (!this.v$.$error) {
-                this.createProfile({
-                    userName: this.userName, 
-                    title: this.title, 
-                    description: this.description, 
-                    startDate: this.startDate, 
-                    endDate: this.endDate
-                });
-                // alert(`Form successfully submitted ... `);   
+                alert(`Form successfully submitted ... `);   
+                this.messageText = `FrontEnd: Form successfully submitted ... `
+                this.$emit('update:messageVisible', true) 
+
+                axios.post('http://localhost:3000/profiles', {
+                userName: this.userName,
+                title: this.title,
+                description: this.description,
+                startDate: this.startDate,
+                endDate: this.endDate
+            })
+            .then(response => {
+                this.userName = '',
+                this.title = '',
+                this.description = '',
+                this.startDate = ''
+                this.endDate = ''
+                this.messageText = `FrontEnd: Form successfully submitted ... `
+                this.messageVisible = true 
+            })
+                console.log(this.v$.$errors);
+                this.messageText = `FrontEnd: Form successfully submitted ... `
+                // this.messageVisible = true
+                this.$emit('update:messageVisible', true) 
+                
             }
-            // else {
-            //     // alert(`Form failed validation ... `);   
-            //     // console.log(this.v$.$errors);
-            //     // console.log(this.v$.email.$errors[0].$message)
-            // }
+            else {
+                // alert(`Form failed validation ... `);   
+                // console.log(this.v$.$errors);
+                // console.log(this.v$.email.$errors[0].$message)
+            }
         },
         closeDialog() {
             if (this.v$.$errors.length == 0) {
                 this.$emit('update:modelValue', false)
             }
         },
-        ...mapActions({
-            createProfile: 'profile/createProfile'
-        })
+        // Error message
+        messageDialog() {
+            this.messageVisible = false
+        },
     }
 }
 </script>

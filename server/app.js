@@ -8,8 +8,10 @@ const path = require('path');
 const RouterLogon = require('./routers/RouterLogon');
 const RouterUserInfo = require('./routers/RouterUserInfo');
 const RouterUserProfile = require('./routers/RouterUserProfile');
+const mwError = require('./middleware/mwError');
 
 const PORT = process.env.PORT || 3000;
+const DB = process.env.DB || 'mongodb+srv://user:user@cluster0.5y3d0h7.mongodb.net/?retryWrites=true&w=majority'
 const pid = process.pid;
 
 const app = express();
@@ -36,10 +38,12 @@ app.use(RouterLogon);
 app.use(RouterUserInfo);
 app.use(RouterUserProfile);
 
+app.use(mwError);
+
 const start = async (req, res) => {
     try {
-        await mongoose.set("strictQuery", false);
-        await mongoose.connect(process.env.DB, {
+        await mongoose.set('strictQuery', false);
+        await mongoose.connect(DB, {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });
@@ -50,7 +54,6 @@ const start = async (req, res) => {
         console.log(err);
     }
 }
-
 
 
 start();

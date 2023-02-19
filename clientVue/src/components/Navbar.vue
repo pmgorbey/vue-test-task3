@@ -5,12 +5,6 @@
             
             <div class="login" v-if="user">
                 <my-button
-                    @click="$router.push('/users')"
-                    style="margin-left: 10px"
-                >
-                    UsersPage
-                </my-button>
-                <my-button
                     @click="$router.push('/store')"
                     style="margin-left: 10px"
                 >
@@ -86,6 +80,7 @@ export default {
     display: flex;
     align-items: center;
     padding: 0 15px;
+    background: url('@/assets/img-1.jpg');
 }
 .navbar__btns {
     margin-left: auto;

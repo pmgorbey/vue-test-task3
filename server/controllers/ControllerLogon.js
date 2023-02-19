@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const {validationResult} = require('express-validator');
 const {secret} = require('../config');
+const ApiError = require('../helpers/apiErrors');
 
 const generateAccessToken = (id) => {
     const payload = {
@@ -14,20 +15,17 @@ const generateAccessToken = (id) => {
 
 class Controller {
     //REGISTRATION
-    async registration(req, res) {
+    async registration(req, res, next) {
         try {
             const errors = validationResult(req);
             if (!errors.isEmpty()) {
-                console.log('Error during registration ...');
                 return res.status(400).json({message: 'Error during registration ...', errors});
             }
 
-            const {firstName, lastName, email, password, passwordConfirm} = req.body;   
-            // console.log(req.body);         
+            const {firstName, lastName, email, password, passwordConfirm} = req.body;      
             const candidate = await User.findOne({firstName: firstName});
             if (candidate) {
-                console.log('User with this name is already registered ... ');
-                return res.status(400).json({message: 'User with this name is already registered ... '});
+                throw ApiError.BadRequest(`User with this name ${email} is already registered ... `);
             }
 
             const hashPassword = bcrypt.hashSync(password, 5);
@@ -36,33 +34,27 @@ class Controller {
             await user.save();
             console.log('User is successfully registered ...');
             return res.json({message: 'User is successfully registered ...'});
-            // res.redirect('/');
-
+            
         } catch (err) {
-            console.log('Registration error ...');
-            res.status(400).json({message: 'Registration error ...'});
+            next(err)
         }
     }
 
-
     //Login
-    async login(req, res) {
+    async login(req, res, next) {
         try {
+
+            //Validation user
             const {email, password} = req.body;
-            // console.log(req.body); 
             const user = await User.findOne({email: email});
             if (!user) {
-                console.log(`User with name ${email} is not found ...`);
-                return res.status(400).json({message: `User with name ${email} is not found ...`});
+                throw ApiError.BadRequest(`User with name ${email} is not found ...`);
             }
 
             //Validation password
             const validPassword = bcrypt.compareSync(password, user.password);
-            
             if (!validPassword) {
-                console.log(`Password is incorrect ...`);
-                return res.status(400).json({message: `Password is incorrect ...`});
-                 
+                throw ApiError.BadRequest(`Password is incorrect ...`);                 
             }
 
             //JWT 
@@ -75,38 +67,30 @@ class Controller {
             }});         
 
         } catch (err) {
-            console.log('Login error ... ');
-            res.status(400).json({message: 'Login error ... '});
+            next(err);
         }
     }
 
     //USERS
-    async getUsers(req, res) {
+    async getUsers(req, res, next) {
         try {
             if (req.headers.authorization == undefined) {
-                console.log('User is not authorized, token failed ...');
-                return res.status(403).json({message: 'User is not authorized, token failed ...'});
+                throw ApiError.UnauthorizedError();
             }
-            console.log(req.headers.authorization);
             // const token = req.headers.authorization.split(' ')[1];
             const token = req.headers.authorization;
             
             if (!token) {
-                console.log('User is not authorized, token failed ...');
-                return res.status(403).json({message: 'User is not authorized, token failed ...'});
+                throw ApiError.UnauthorizedError();
             }
 
             const decodedToken = jwt.verify(token, secret);
-            console.log(decodedToken);
-
             const user = await User.findOne({_id: decodedToken.id});
-            console.log(user);
             return res.status(200).send(user)
 
         } catch (err) {
-            console.log(err);
-            console.log('User is not authorized ...');
-            res.status(403).json({message: 'User is not authorized ...'});
+            // res.status(403).json({message: 'User is not authorized ...'});
+            next(err);
         }
     }
 

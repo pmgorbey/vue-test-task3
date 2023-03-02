@@ -7,8 +7,9 @@ export const usersInfoModule = {
         userName: '',
         email: '',
         phoneNumber: '',
-        countEvent: '',
-        dateNextEvent: '',
+        //Indicators
+        countEvent: [],
+        dateNextEvent: [],
         usersInfo: [],
         profiles: [],
         // Pagination
@@ -20,9 +21,9 @@ export const usersInfoModule = {
         countEvent(state) {            
             for (let i in state.usersInfo) {
                 state.usersInfo[i].countEvent = 0;
-                for (let j in state.profiles) {
-                    if (state.usersInfo[i].userName === state.profiles[j].userName) {
-                        state.usersInfo[i].countEvent++;
+                for (let j in state.countEvent) {
+                    if (state.usersInfo[i].userName === state.countEvent[j]._id) {
+                        state.usersInfo[i].countEvent = state.countEvent[j].countTask;
                     } 
                 }
             }
@@ -30,25 +31,12 @@ export const usersInfoModule = {
         },
         //Next event date
         dateNextEvent(state) {
-            const array = [];
             for (let i in state.usersInfo) {
-                array[i] = []
                 state.usersInfo[i].dateNextEvent = 'Not event';
 
-                for (let j in state.profiles) {
-                    if (state.usersInfo[i].userName === state.profiles[j].userName) {   
-                        array[i][j] = new Date(state.profiles[j].startDate).toLocaleDateString();   
-                        
-                        for (let i in array) {
-                            if (array[i][j]) {
-                                let min = array[i][0]
-                                if (min < array[i][j]) {
-                                    state.usersInfo[i].dateNextEvent = min
-                                } else {
-                                    state.usersInfo[i].dateNextEvent = array[i][j]
-                                }
-                            }
-                        }
+                for (let j in state.dateNextEvent) {
+                    if (state.usersInfo[i].userName === state.dateNextEvent[j]._id) {   
+                        state.usersInfo[i].dateNextEvent = new Date(state.dateNextEvent[j].startDate).toLocaleDateString();   
                     } 
                 }
             }
@@ -75,7 +63,7 @@ export const usersInfoModule = {
             state.countEvent = countEvent;
         },
         setDateNextEvent(state, dateNextEvent) {
-            state.setDateNextEvent = dateNextEvent;
+            state.dateNextEvent = dateNextEvent;
         },
         setUsersInfo(state, usersInfo) {
             state.usersInfo = usersInfo;
@@ -92,7 +80,7 @@ export const usersInfoModule = {
         }
     },
     actions: {
-        // Sort
+        // Sort by Vue
         SortByUserName({state}) {
             state.usersInfo.sort((a, b) => a.userName.localeCompare(b.userName));
         },
@@ -113,23 +101,27 @@ export const usersInfoModule = {
             commit('setPageInfo', pageCurrent)           
         },
         //Request to Server
-        getUsersInfo({state, commit}, selectedSort) {
+        async getUsersInfo({state, commit}, selectedSort) {
             if (!selectedSort) {
-                axios.get(`http://localhost:3000/usersInfo?pageInfo=${state.pageInfo}`)
+                await axios.get(`http://localhost:3000/usersInfo?pageInfo=${state.pageInfo}`)
                 .then(response => {
                     commit('setUsersInfo', response.data.users);
                     commit('setPageTotalInfo', response.data.pageTotalInfo)
+                    commit('setDateNextEvent', response.data.dateNextEvent);
+                    commit('setCountEvent', response.data.countTask);
                 })
             } else {
-                axios.get(`http://localhost:3000/usersInfo?pageInfo=${state.pageInfo}&sort=${selectedSort}`)
+                await axios.get(`http://localhost:3000/usersInfo?pageInfo=${state.pageInfo}&sort=${selectedSort}`)
                 .then(response => {
                     commit('setUsersInfo', response.data.users);
                     commit('setPageTotalInfo', response.data.pageTotalInfo)
+                    commit('setDateNextEvent', response.data.dateNextEvent);
+                    commit('setCountEvent', response.data.countTask);
                 })
             }
         },
-        getProfilesInfo({state, commit}) {
-            axios.get(`http://localhost:3000/profiles`)
+        async getProfilesInfo({state, commit}) {
+            await axios.get(`http://localhost:3000/profiles`)
             .then(response => {
                 commit('setProfiles', response.data.profiles);
             })

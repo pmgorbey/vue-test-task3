@@ -11,7 +11,10 @@ const RouterUserProfile = require('./routers/RouterUserProfile');
 const mwError = require('./middleware/mwError');
 
 const PORT = process.env.PORT || 3000;
-const DB = process.env.DB || 'mongodb+srv://user:user@cluster0.5y3d0h7.mongodb.net/?retryWrites=true&w=majority'
+
+// const DB = 'mongodb+srv://user:user@cluster0.5y3d0h7.mongodb.net/?retryWrites=true&w=majority'
+const DB = 'mongodb://user:user@ac-vtc03fs-shard-00-00.5y3d0h7.mongodb.net:27017,ac-vtc03fs-shard-00-01.5y3d0h7.mongodb.net:27017,ac-vtc03fs-shard-00-02.5y3d0h7.mongodb.net:27017/?ssl=true&replicaSet=atlas-s64huf-shard-0&authSource=admin&retryWrites=true&w=majority'
+                             
 const pid = process.pid;
 
 const app = express();

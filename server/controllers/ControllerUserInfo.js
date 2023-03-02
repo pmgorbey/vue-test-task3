@@ -1,4 +1,5 @@
 const ModelUserInfo = require('../models/ModelUserInfo');
+const ModelUserProfile = require('../models/ModelUserProfile');
 const {validationResult} = require('express-validator');
 const ApiError = require('../helpers/apiErrors');
 
@@ -112,8 +113,28 @@ class ControllerUserInfo {
                         .limit(limit)
                         .sort({userName: 1})
                     break
-            }          
-            return res.status(200).json({users, pageTotalInfo});
+            } 
+            
+            //Indicators
+             const countTask = await ModelUserProfile.aggregate([
+                {
+                    $group: {
+                        _id: '$userName',
+                        countTask: { $sum: 1 }
+                    }
+                }
+            ]);
+            const dateNextEvent = await ModelUserProfile.aggregate([
+                {
+                    $group: {
+                        _id: '$userName',
+                        startDate: { $min: '$startDate' }
+                    }
+                }
+            ]);
+
+            return res.status(200).json({users, dateNextEvent, countTask, pageTotalInfo});
+            
         } catch(error) { 
             next(error)
         }
